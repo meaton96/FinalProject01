@@ -9,6 +9,7 @@ public class PlayerBehaviour : MonoBehaviour {
     [SerializeField] private bool facingRight;
 
     float horizontalValue;
+    float verticalValue;
 
     public float speed;
 
@@ -16,9 +17,6 @@ public class PlayerBehaviour : MonoBehaviour {
 
     // reference var for our Animator Component
     Animator animator;
-
-    [SerializeField] private Transform spawnPoint;
-    [SerializeField] private GameObject bulletPrefab;
 
     private void Start() {
         // gets reference to Rigidbody2D on same GameObject
@@ -55,6 +53,7 @@ public class PlayerBehaviour : MonoBehaviour {
 
     void CheckAxes() {
         horizontalValue = Input.GetAxis("Horizontal") * speed;
+        verticalValue = Input.GetAxis("Vertical") * speed;
     }
 
     void FlipSprite() {
@@ -70,7 +69,7 @@ public class PlayerBehaviour : MonoBehaviour {
 
     void SetVelocity() {
         // assigns value to our rigidbody's velocity
-        rb.velocity = new Vector2(horizontalValue, 0);
+        rb.velocity = new Vector2(horizontalValue, verticalValue);
         animator.SetFloat("Speed", Mathf.Abs(horizontalValue));
     }
 }
