@@ -2,19 +2,75 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerBehaviour : MonoBehaviour
-{
+// remove this namespace bracketing
+
+
+public class PlayerBehaviour : MonoBehaviour {
+    [SerializeField] private bool facingRight;
+
+    float horizontalValue;
+
+    public float speed;
+
+    Rigidbody2D rb;
+
+    // reference var for our Animator Component
     Animator animator;
-    // Start is called before the first frame update
-    void Start() {
+
+    [SerializeField] private Transform spawnPoint;
+    [SerializeField] private GameObject bulletPrefab;
+
+    private void Start() {
+        // gets reference to Rigidbody2D on same GameObject
+        rb = GetComponent<Rigidbody2D>();
+
+        // get reference to Animator on the same GameObject
         animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.D)) {
-            
+    void Update() {
+        CheckAxes();
+        Animate();
+        FlipSprite();
+
+    }
+
+    void FixedUpdate() {
+        // call physics-related methods like setvelocity in FixedUpdate
+
+        // Use either Set Velocity or ForceMove. Not both. They are different movement ideas
+
+        SetVelocity();
+
+        //ForceMove();
+    }
+    
+    void Animate() {
+        if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space)) {
+            animator.SetTrigger("Attack");
         }
+        
+    }
+
+    void CheckAxes() {
+        horizontalValue = Input.GetAxis("Horizontal") * speed;
+    }
+
+    void FlipSprite() {
+        if (horizontalValue < 0 && facingRight == true) {
+            transform.Rotate(0, 180, 0);
+            facingRight = false;
+        }
+        else if (horizontalValue > 0 && facingRight == false) {
+            transform.Rotate(0, 180, 0);
+            facingRight = true;
+        }
+    }
+
+    void SetVelocity() {
+        // assigns value to our rigidbody's velocity
+        rb.velocity = new Vector2(horizontalValue, 0);
+        animator.SetFloat("Speed", Mathf.Abs(horizontalValue));
     }
 }
