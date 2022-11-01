@@ -10,6 +10,8 @@ public class PlayerBehaviour : MonoBehaviour {
 
     float horizontalValue;
     float verticalValue;
+    public int health_current = 10;
+    public int health_max = 10;
 
     public float speed;
 
