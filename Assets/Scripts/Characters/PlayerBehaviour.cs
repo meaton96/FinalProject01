@@ -14,7 +14,7 @@ public class PlayerBehaviour : MonoBehaviour {
     public int health_max = 10;
 
     public float speed;
-
+    public float playerKnockbackOnEnemyCollision;
     Rigidbody2D rb;
 
     // reference var for our Animator Component
@@ -46,6 +46,7 @@ public class PlayerBehaviour : MonoBehaviour {
         //ForceMove();
     }
     
+
     void Animate() {
         if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space)) {
             animator.SetTrigger("Attack");
@@ -73,5 +74,8 @@ public class PlayerBehaviour : MonoBehaviour {
         // assigns value to our rigidbody's velocity
         rb.velocity = new Vector2(horizontalValue, verticalValue);
         animator.SetFloat("Speed", Mathf.Abs(horizontalValue));
+    }
+    private Vector2 GetVectorToEnemy(GameObject enemy) {
+        return (enemy.GetComponent<Rigidbody2D>().position - rb.position).normalized;
     }
 }
