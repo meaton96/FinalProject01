@@ -26,6 +26,7 @@ public class PlayerBehaviour : MonoBehaviour {
 
         // get reference to Animator on the same GameObject
         animator = GetComponent<Animator>();
+        
     }
 
     // Update is called once per frame
@@ -33,6 +34,8 @@ public class PlayerBehaviour : MonoBehaviour {
         CheckAxes();
         Animate();
         FlipSprite();
+        if (health_current <= 0)
+            animator.SetTrigger("Death");
 
     }
 
@@ -77,5 +80,8 @@ public class PlayerBehaviour : MonoBehaviour {
     }
     private Vector2 GetVectorToEnemy(GameObject enemy) {
         return (enemy.GetComponent<Rigidbody2D>().position - rb.position).normalized;
+    }
+    public void PlayerDeath() {
+        Destroy(gameObject);
     }
 }

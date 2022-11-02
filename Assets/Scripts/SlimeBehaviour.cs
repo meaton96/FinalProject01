@@ -6,17 +6,26 @@ public class SlimeBehaviour : EnemyBehaviour
 {
     // Start is called before the first frame update
     [SerializeField] float movementSpeed;
+    [SerializeField] float attackRange;
     void Start()
     {
-        
-        
+        Rb = GetComponent<Rigidbody2D>();
+        GetAnimator = GetComponent<Animator>();
+        Player = GameObject.FindWithTag("Player");
+
+    }
+    void OnCollisionEnter2D(Collision2D collision) {
+        KnockedByPlayer(collision);
     }
 
     // Update is called once per frame
     void Update()
     {
-        rb.velocity = GetVectorToPlayer();
-        animator.SetFloat("Speed", Mathf.Abs(rb.velocity.magnitude));
+        SetVelocity(movementSpeed);
+        if (GetVectorToPlayer().magnitude <= attackRange) {
+            GetAnimator.SetTrigger("Attack");
+            AttackPlayer();
+        }
     }
 
     
