@@ -31,7 +31,7 @@ public class EnemyBehaviour : MonoBehaviour
         if (collision.gameObject.CompareTag("Player")) {
 
             //collided with player
-            player.GetComponent<PlayerBehaviour>().health_current--;
+            player.GetComponent<PlayerBehaviour>().DamagePlayerHealth(PlayerBehaviour.Damage.Half);
         }
     }
     public virtual void AttackPlayer() {

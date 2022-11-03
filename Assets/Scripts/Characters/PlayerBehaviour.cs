@@ -8,10 +8,13 @@ using UnityEngine;
 public class PlayerBehaviour : MonoBehaviour {
     [SerializeField] private bool facingRight;
 
+    public enum Damage { Half, Full }
+
     float horizontalValue;
     float verticalValue;
     public int health_current = 10;
     public int health_max = 10;
+    public InterfaceScript interfaceScript;
 
     public float speed;
     public float playerKnockbackOnEnemyCollision;
@@ -26,8 +29,9 @@ public class PlayerBehaviour : MonoBehaviour {
 
         // get reference to Animator on the same GameObject
         animator = GetComponent<Animator>();
-        
+
     }
+    private
 
     // Update is called once per frame
     void Update() {
@@ -48,13 +52,13 @@ public class PlayerBehaviour : MonoBehaviour {
 
         //ForceMove();
     }
-    
+
 
     void Animate() {
         if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space)) {
             animator.SetTrigger("Attack");
         }
-        
+
     }
 
     void CheckAxes() {
@@ -84,4 +88,14 @@ public class PlayerBehaviour : MonoBehaviour {
     public void PlayerDeath() {
         Destroy(gameObject);
     }
+    public void DamagePlayerHealth(Damage dam) {
+        if (dam == Damage.Half) {
+            interfaceScript.RemoveHeartHalf();
+        }
+        else
+            interfaceScript.RemoveFullHeart();
+        health_current--;
+    }
+
+    
 }
