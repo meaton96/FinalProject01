@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ public class EnemyBehaviour : MonoBehaviour
     private Animator animator;
     private GameObject player;
     public float KnockBackAmount;
+    private float health { get; set; }
     //public GameObject enemy;
     // Start is called before the first frame update
     void Start()
@@ -42,8 +44,14 @@ public class EnemyBehaviour : MonoBehaviour
         animator.SetFloat("Speed", Mathf.Abs(rb.velocity.magnitude));
     }
     protected Vector2 GetVectorToPlayer() {
-
-        return (player.GetComponent<Rigidbody2D>().position - rb.position);
+        if (player != null)
+            return (player.GetComponent<Rigidbody2D>().position - rb.position);
+        else return Vector2.zero;
     }
-    
+    private void OnCollisionEnter2D(Collision2D collision) {
+        if (collision.gameObject.CompareTag("Player_Projectile")) {
+            health--;
+        }
+    }
+
 }
