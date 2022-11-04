@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - Enemy
+  - Interface_HeartFull
+  - Interface_HeartEmpty
+  - Interface_HeartHalf
   layers:
   - Default
   - TransparentFX

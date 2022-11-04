@@ -437,7 +437,9 @@ MonoBehaviour:
   heartFullPrefab: {fileID: 4418599073605797474, guid: a8c4a858d2c518e4d9cf4359a4d8a4d5, type: 3}
   heartHalfPrefab: {fileID: 7869512271689956446, guid: 911ce8d3b4f5a594dbedd9872b356cbf, type: 3}
   heartEmptyPrefab: {fileID: 6400098576240117463, guid: 71975ba7f0cdb174db6d6c5b91c96ffc, type: 3}
-  heartStartLoc: {x: 0.5, y: 3.5}
+  heartDistance: 0.4
+  hearts: []
+  heartStartLoc: {x: -3.7, y: 1.7}
 --- !u!1 &1189354663
 GameObject:
   m_ObjectHideFlags: 0
@@ -567,6 +569,7 @@ MonoBehaviour:
   facingRight: 1
   health_current: 10
   health_max: 10
+  interfaceScript: {fileID: 837173073}
   speed: 1
   playerKnockbackOnEnemyCollision: 0
 --- !u!50 &1203339805
