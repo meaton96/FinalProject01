@@ -51,9 +51,19 @@ public class InterfaceScript : MonoBehaviour {
         if (curHearts < 0)
             return;
         GameObject currentHeart = hearts[(int)curHearts];
-        hearts[(int)curHearts] = Instantiate(heartEmptyPrefab, currentHeart.transform.position, Quaternion.identity);
-        Destroy(currentHeart);
-        curHearts--;
+        if (currentHeart.CompareTag(HEART_HALF_TAG)) {
+            hearts[(int)curHearts] = Instantiate(heartEmptyPrefab, currentHeart.transform.position, Quaternion.identity);
+            curHearts--;
+            Destroy(currentHeart);
+            currentHeart = hearts[(int)curHearts];
+            hearts[(int)curHearts] = Instantiate(heartHalfPrefab, currentHeart.transform.position, Quaternion.identity);
+            Destroy(currentHeart);
+        }
+        else {
+            hearts[(int)curHearts] = Instantiate(heartEmptyPrefab, currentHeart.transform.position, Quaternion.identity);
+            Destroy(currentHeart);
+            curHearts--;
+        }
 
     }
 
