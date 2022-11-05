@@ -581,7 +581,7 @@ MonoBehaviour:
   numArrowsFired: 0
   melee_damage: 0
   ranged_damage: 0
-  arrowGameObject: {fileID: 0}
+  arrowGameObject: {fileID: 4649408194310451021, guid: 5c075e9ec046f7b4ea4f316546d02321, type: 3}
 --- !u!50 &1203339805
 Rigidbody2D:
   serializedVersion: 4
@@ -663,7 +663,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1203339803}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.254, y: -0.182, z: 0}
+  m_LocalPosition: {x: 0.23, y: -0.182, z: 0}
   m_LocalScale: {x: 1.3, y: 1.3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -704,7 +704,7 @@ PolygonCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.05, y: 0}
+  m_Offset: {x: 0.025, y: 0.055}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.34701225, y: 0.3740101}

@@ -133,13 +133,13 @@ public class PlayerBehaviour : MonoBehaviour {
             else
                 rollDir = rb.velocity.normalized * -1;
         }
-       // rollDir = (Input.mousePosition - transform.position).normalized;
+        // rollDir = (Input.mousePosition - transform.position).normalized;
         //Debug.Log("(" + rollDir.x + "," + rollDir.y + ")");
         rollSpeedCounter = rollSpeed;
     }
     private void HandleRoll() {
         if (facingRight)
-        transform.position += rollSpeed * Time.deltaTime * rollDir;
+            transform.position += rollSpeed * Time.deltaTime * rollDir;
         else
             transform.position -= rollSpeed * Time.deltaTime * rollDir;
         rollSpeedCounter -= rollSpeedCounter * Time.deltaTime * rollSpeedReduction;
@@ -174,15 +174,24 @@ public class PlayerBehaviour : MonoBehaviour {
     }
 
     private void ShootArrow() {
-        float angle = 0;
-
+        Vector3 playerPos = transform.position;
+        Vector3 mousePos = Input.mousePosition;
 
         Stack<GameObject> arrows = new();
         for (int x = 0; x < numArrowsFired; x++) {
             //figure out arrows
         }
-        arrows.Push(Instantiate(arrowGameObject, transform.position, new Quaternion(1, 1, 0, 0)));
-        arrows.Pop().gameObject.GetComponent<ArrowBehaviour>().SetDirection(angle, 0);
+        //figure out arrow direction =/
+        Quaternion q = new Quaternion();
+        Vector3 a = Vector3.Cross(playerPos, mousePos);
+        q.Set(a.x, a.y, a.z,
+            Mathf.Sqrt(
+                (Mathf.Pow(playerPos.magnitude, 2) *
+                 Mathf.Pow(Input.mousePosition.magnitude, 2))) +
+                 Vector3.Dot(playerPos, mousePos));
+
+        arrows.Push(Instantiate(arrowGameObject, playerPos, q));
+        arrows.Pop().gameObject.GetComponent<ArrowBehaviour>().SetDirection((playerPos - mousePos).normalized, 0);
 
     }
 

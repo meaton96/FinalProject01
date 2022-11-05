@@ -28,10 +28,10 @@ public class ArrowBehaviour : MonoBehaviour
 
 
     }
-    public void SetDirection(float angle, int pierceNum) {
+    public void SetDirection(Vector2 dir, int pierceNum) {
         pierceNunber = pierceNum;
 
-        gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(speed * Mathf.Cos(angle), speed * Mathf.Sin(angle));
+        gameObject.GetComponent<Rigidbody2D>().velocity = dir * speed;
 
     }
 }
