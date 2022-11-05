@@ -574,7 +574,7 @@ MonoBehaviour:
   health_current: 10
   health_max: 10
   interfaceScript: {fileID: 837173073}
-  speed: 1
+  speed: 1.2
   playerKnockbackOnEnemyCollision: 0
   numArrowsFired: 0
   melee_damage: 0
