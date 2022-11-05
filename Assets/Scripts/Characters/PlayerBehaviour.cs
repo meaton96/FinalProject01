@@ -8,6 +8,10 @@ using UnityEngine.SceneManagement;
 
 public class PlayerBehaviour : MonoBehaviour {
     [SerializeField] private bool facingRight;
+    [SerializeField] private float rollSpeed;
+    private float rollSpeedCounter;
+    [SerializeField] private float rollSpeedReduction;
+    private Vector3 rollDir;
 
     public enum Damage { Half, Full }
     private const string END_GAME_SCENE = "End Game";
@@ -17,6 +21,12 @@ public class PlayerBehaviour : MonoBehaviour {
     private const string ANIM_DEATH_TAG = "Death";
     private const string ANIM_CELEBRATE_TAG = "Celebrate";
     private const string ANIM_SPEED_TAG = "Speed";
+
+    private enum State {
+        Normal,
+        Roll
+    }
+    private State state;
 
     float horizontalValue;
     float verticalValue;
@@ -40,18 +50,102 @@ public class PlayerBehaviour : MonoBehaviour {
 
         // get reference to Animator on the same GameObject
         animator = GetComponent<Animator>();
+        state = State.Normal;
 
     }
     private
 
     // Update is called once per frame
     void Update() {
-        CheckAxes();
-        Animate();
-        FlipSprite();
-        if (health_current <= 0)
-            animator.SetTrigger(ANIM_DEATH_TAG);
+        switch (state) {
+            case State.Normal:
+                //CheckAxes();
+                HandleMovement();
+                Animate();
+                //FlipSprite();
+                if (health_current <= 0)
+                    animator.SetTrigger(ANIM_DEATH_TAG);
+                break;
+            case State.Roll:
+                HandleRoll();
+                break;
+        }
 
+    }
+    public void HandleMovement() {
+        float moveX = 0f;
+        float moveY = 0f;
+        if (Input.GetKey(KeyCode.W)) {
+            moveY = 1f;
+        }
+        if (Input.GetKey(KeyCode.S)) {
+            moveY = -1f;
+        }
+        if (Input.GetKey(KeyCode.A)) {
+            moveX = -1f;
+        }
+        if (Input.GetKey(KeyCode.D)) {
+            moveX = 1f;
+        }
+        Vector2 movement = new Vector2(moveX, moveY) * speed * Time.deltaTime;
+
+        if (moveX < 0 && facingRight)
+            FlipSprite();
+        if (moveX > 0 && !facingRight)
+            FlipSprite();
+
+        rb.position += movement;
+        rb.velocity = movement;
+        if (movement.magnitude > 0)
+            animator.SetFloat(ANIM_SPEED_TAG, 1);
+        else
+            animator.SetFloat(ANIM_SPEED_TAG, 0);
+    }
+    private bool TryMove(Vector3 moveDir, float speed) {
+        Vector3 move = moveDir;
+        bool canMove = CanMove(moveDir, speed);
+        if (!canMove) {
+            move = new Vector3(moveDir.x, 0f).normalized;
+            canMove = move.x != 0f && CanMove(move, speed);
+            if (!canMove) {
+                move = new Vector3(0f, moveDir.y).normalized;
+                canMove = moveDir.y != 0f && CanMove(move, speed);
+            }
+        }
+        if (canMove) {
+            transform.position += move * speed;
+            return true;
+        }
+        else
+            return false;
+    }
+    private bool CanMove(Vector3 moveDir, float distance) {
+        return Physics2D.Raycast(transform.position, moveDir, distance).collider == null;
+    }
+    private void StartRoll() {
+        state = State.Roll;
+        if (rb.velocity.magnitude < .05f) {
+            rollDir = Vector2.right;
+        }
+        else {
+            if (facingRight)
+                rollDir = rb.velocity.normalized;
+            else
+                rollDir = rb.velocity.normalized * -1;
+        }
+       // rollDir = (Input.mousePosition - transform.position).normalized;
+        //Debug.Log("(" + rollDir.x + "," + rollDir.y + ")");
+        rollSpeedCounter = rollSpeed;
+    }
+    private void HandleRoll() {
+        if (facingRight)
+        transform.position += rollSpeed * Time.deltaTime * rollDir;
+        else
+            transform.position -= rollSpeed * Time.deltaTime * rollDir;
+        rollSpeedCounter -= rollSpeedCounter * Time.deltaTime * rollSpeedReduction;
+
+        if (rollSpeedCounter <= 1)
+            state = State.Normal;
     }
 
     void FixedUpdate() {
@@ -59,7 +153,7 @@ public class PlayerBehaviour : MonoBehaviour {
 
         // Use either Set Velocity or ForceMove. Not both. They are different movement ideas
 
-        SetVelocity();
+        //SetVelocity();
 
         //ForceMove();
     }
@@ -74,15 +168,11 @@ public class PlayerBehaviour : MonoBehaviour {
         }
         else if (Input.GetKeyDown(KeyCode.Space)) {
             animator.SetTrigger(ANIM_ROLL_TAG);
+            StartRoll();
         }
 
     }
-    public void RollSpeedUp() {
-        speed *= 2;
-    }
-    public void RollSpeedDown() {
-        speed /= 2;
-    }
+
     private void ShootArrow() {
         float angle = 0;
 
@@ -91,31 +181,14 @@ public class PlayerBehaviour : MonoBehaviour {
         for (int x = 0; x < numArrowsFired; x++) {
             //figure out arrows
         }
-        arrows.Push(Instantiate(arrowGameObject, transform.position, new Quaternion(1,1,0,0)));
+        arrows.Push(Instantiate(arrowGameObject, transform.position, new Quaternion(1, 1, 0, 0)));
         arrows.Pop().gameObject.GetComponent<ArrowBehaviour>().SetDirection(angle, 0);
 
     }
 
-    void CheckAxes() {
-        horizontalValue = Input.GetAxis("Horizontal") * speed;
-        verticalValue = Input.GetAxis("Vertical") * speed;
-    }
-
     void FlipSprite() {
-        if (horizontalValue < 0 && facingRight == true) {
-            transform.Rotate(0, 180, 0);
-            facingRight = false;
-        }
-        else if (horizontalValue > 0 && facingRight == false) {
-            transform.Rotate(0, 180, 0);
-            facingRight = true;
-        }
-    }
-
-    void SetVelocity() {
-        // assigns value to our rigidbody's velocity
-        rb.velocity = new Vector2(horizontalValue, verticalValue);
-        animator.SetFloat(ANIM_SPEED_TAG, Mathf.Abs(horizontalValue));
+        transform.Rotate(0, 180, 0);
+        facingRight = !facingRight;
     }
     private Vector2 GetVectorToEnemy(GameObject enemy) {
         return (enemy.GetComponent<Rigidbody2D>().position - rb.position).normalized;
@@ -133,5 +206,5 @@ public class PlayerBehaviour : MonoBehaviour {
         health_current--;
     }
 
-    
+
 }
