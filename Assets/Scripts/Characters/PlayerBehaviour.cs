@@ -163,9 +163,9 @@ public class PlayerBehaviour : MonoBehaviour {
         if (Input.GetMouseButtonDown(0)) {
             animator.SetTrigger(ANIM_ATTACK_TAG);
         }
-        else if (Input.GetMouseButtonDown(1)) {
-            animator.SetTrigger(ANIM_SHOOT_TAG);
-        }
+        //else if (Input.GetMouseButtonDown(1)) {
+            //animator.SetTrigger(ANIM_SHOOT_TAG);
+        //}
         else if (Input.GetKeyDown(KeyCode.Space)) {
             animator.SetTrigger(ANIM_ROLL_TAG);
             StartRoll();
