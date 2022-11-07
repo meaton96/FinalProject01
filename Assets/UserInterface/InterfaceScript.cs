@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class InterfaceScript : MonoBehaviour {
@@ -15,13 +16,14 @@ public class InterfaceScript : MonoBehaviour {
     public GameObject[] hearts;
     private double maxHearts, curHearts;
     public Vector2 heartStartLoc;
-    public Vector2 coinPreFabLoc;
+    [SerializeField] private TextMeshProUGUI coinText;
     // Start is called before the first frame update
     void Start() {
         maxHearts = player.health_max / 2.0;
         curHearts = maxHearts - 1;
         hearts = new GameObject[(int)maxHearts];
         InstantiateHearts();
+        
     }
 
     // Update is called once per frame
@@ -49,15 +51,17 @@ public class InterfaceScript : MonoBehaviour {
         InstantiateHearts();
     }
     public void AddHalfHeart() {
-        if (curHearts >= hearts.Length - 1)
-            return;
         GameObject currentHeart = hearts[(int)curHearts];
+        if (curHearts >= hearts.Length - 1 && currentHeart.CompareTag(HEART_FULL_TAG))
+            return;
+
         if (currentHeart.CompareTag(HEART_HALF_TAG)) {
             hearts[(int)curHearts] = Instantiate(heartFullPrefab, currentHeart.transform.position, Quaternion.identity);
+        }
+        else {
+            hearts[(int)curHearts] = Instantiate(heartHalfPrefab, currentHeart.transform.position, Quaternion.identity);
             curHearts++;
         }
-        else
-            hearts[(int)curHearts] = Instantiate(heartHalfPrefab, currentHeart.transform.position, Quaternion.identity);
         Destroy(currentHeart);
     }
     public void RemoveHeartHalf() {
@@ -92,6 +96,9 @@ public class InterfaceScript : MonoBehaviour {
             curHearts--;
         }
 
+    }
+    public void UpdateCoinText(int numCoins) {
+        coinText.text = numCoins.ToString();
     }
 
 

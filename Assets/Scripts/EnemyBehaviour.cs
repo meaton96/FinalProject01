@@ -10,35 +10,38 @@ public class EnemyBehaviour : MonoBehaviour
     private Animator animator;
     private GameObject player;
     public float KnockBackAmount;
-    private List<Item> drops;
+    private Stack<Item> drops;                           
     [SerializeField] private int numItemsDropped;
-
+    [SerializeField] private float itemSpawnRange;
 
     [SerializeField] protected float Health;
     //public GameObject enemy;
     // Start is called before the first frame update
-    void Start()
+    protected void Start()
     {
+        Rb = GetComponent<Rigidbody2D>();
+        GetAnimator = GetComponent<Animator>();
+        Player = GameObject.FindWithTag("Player");
         MakeDrops();
-        rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
-        player = GameObject.FindWithTag("Player");
-        
+        SetCollisionIgnores();
+
     }
     protected void SetCollisionIgnores() {
-        Physics2D.IgnoreCollision(gameObject.GetComponent<Collider2D>(),
-            GameObject.FindWithTag("Item").GetComponent<Collider2D>());
+        GameObject itemObject = GameObject.FindWithTag("Item");
+        if (itemObject != null)
+            Physics2D.IgnoreCollision(gameObject.GetComponent<Collider2D>(),
+                GameObject.FindWithTag("Item").GetComponent<Collider2D>());
     }
     
     protected void MakeDrops() {
-        drops = new List<Item>();
+        drops = new Stack<Item>();
         //placeholder 
         for (int x = 0; x < numItemsDropped; x++) {
-            if (Random.Range(0, 1) > .5f) {
-                drops.Add(gameObject.AddComponent<CoinBehaviour>());
+            if (Random.Range(0, 1f) > .5f) {
+                drops.Push(gameObject.AddComponent<CoinBehaviour>());
             }
             else
-                drops.Add(gameObject.AddComponent<HeartBehaviour>());
+                drops.Push(gameObject.AddComponent<HeartBehaviour>());
         }
         foreach (Item item in drops) {
             //item.gameObject.SetActive(false);
@@ -86,9 +89,11 @@ public class EnemyBehaviour : MonoBehaviour
 
     }
     private void Die() {
-        foreach(Item i in drops) {
-            i.Drop(transform.position).gameObject.SetActive(true);
-            //Instantiate(i.GetPreFab(), transform.position, Quaternion.identity);
+        while (drops.TryPop(out Item i)) {
+            float theta = Random.Range(0, 2 * Mathf.PI);
+            Vector2 dropPos = new(transform.position.x + itemSpawnRange * Mathf.Cos(theta),
+                transform.position.y + itemSpawnRange * Mathf.Sin(theta));
+            i.Drop(dropPos);
         }
         Destroy(gameObject);
     }

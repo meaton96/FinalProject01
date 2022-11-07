@@ -8,15 +8,7 @@ public class SlimeBehaviour : EnemyBehaviour
     [SerializeField] float movementSpeed;
     [SerializeField] float attackRange;
     
-    void Start()
-    {
-        Rb = GetComponent<Rigidbody2D>();
-        GetAnimator = GetComponent<Animator>();
-        Player = GameObject.FindWithTag("Player");
-        MakeDrops();
-        SetCollisionIgnores();
 
-    }
     void OnCollisionEnter2D(Collision2D collision) {
         KnockedByPlayer(collision);
     }

@@ -230,6 +230,7 @@ public class PlayerBehaviour : MonoBehaviour {
             }
             else if (collision.gameObject.GetComponent<CoinBehaviour>() != null) {
                 numCoins += ((CoinBehaviour) collision.gameObject.GetComponent<CoinBehaviour>().PickUp()).Value;
+                interfaceScript.UpdateCoinText(numCoins);
             }
             else
                 backpack.Add(collision.gameObject.GetComponent<Item>().PickUp());   //might be null??
