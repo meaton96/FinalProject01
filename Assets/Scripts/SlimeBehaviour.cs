@@ -7,11 +7,14 @@ public class SlimeBehaviour : EnemyBehaviour
     // Start is called before the first frame update
     [SerializeField] float movementSpeed;
     [SerializeField] float attackRange;
+    
     void Start()
     {
         Rb = GetComponent<Rigidbody2D>();
         GetAnimator = GetComponent<Animator>();
         Player = GameObject.FindWithTag("Player");
+        MakeDrops();
+        SetCollisionIgnores();
 
     }
     void OnCollisionEnter2D(Collision2D collision) {

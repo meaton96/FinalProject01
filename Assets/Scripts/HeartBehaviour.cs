@@ -1,17 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-public class GameController : MonoBehaviour
+public class HeartBehaviour : Item
 {
-    public GameObject CoinPreFab;
-    public GameObject HeartItemPreFab;
-    
     // Start is called before the first frame update
+    public double HealAmount { get; set; }
     void Start()
     {
-        
+        preFab = GameObject.FindWithTag("GameControl").gameObject.GetComponent<GameController>().HeartItemPreFab;
+        HealAmount = 1;   
     }
 
     // Update is called once per frame
@@ -19,4 +17,5 @@ public class GameController : MonoBehaviour
     {
         
     }
+    
 }

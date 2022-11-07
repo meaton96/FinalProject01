@@ -12,6 +12,7 @@ public class PlayerBehaviour : MonoBehaviour {
     private float rollSpeedCounter;
     [SerializeField] private float rollSpeedReduction;
     private Vector3 rollDir;
+    private List<Item> backpack;
 
     public enum Damage { Half, Full }
     private const string END_GAME_SCENE = "End Game";
@@ -39,6 +40,7 @@ public class PlayerBehaviour : MonoBehaviour {
     public int melee_damage;
     public int ranged_damage;
     public GameObject arrowGameObject;
+    private int numCoins { get; set; }
     Rigidbody2D rb;
 
     // reference var for our Animator Component
@@ -47,13 +49,13 @@ public class PlayerBehaviour : MonoBehaviour {
     private void Start() {
         // gets reference to Rigidbody2D on same GameObject
         rb = GetComponent<Rigidbody2D>();
+        backpack = new();
 
         // get reference to Animator on the same GameObject
         animator = GetComponent<Animator>();
         state = State.Normal;
 
     }
-    private
 
     // Update is called once per frame
     void Update() {
@@ -87,7 +89,7 @@ public class PlayerBehaviour : MonoBehaviour {
         if (Input.GetKey(KeyCode.D)) {
             moveX = 1f;
         }
-        Vector2 movement = new Vector2(moveX, moveY) * speed * Time.deltaTime;
+        Vector2 movement = speed * Time.deltaTime * new Vector2(moveX, moveY);
 
         if (moveX < 0 && facingRight)
             FlipSprite();
@@ -215,5 +217,24 @@ public class PlayerBehaviour : MonoBehaviour {
         health_current--;
     }
 
+    private void OnCollisionEnter2D(Collision2D collision) {
+        if (collision.gameObject.CompareTag("Item")) {
+            if (collision.gameObject.GetComponent<HeartBehaviour>() != null) {
+                int healthAmount = (int)collision.gameObject.GetComponent<HeartBehaviour>().HealAmount;
+                health_current += healthAmount;
+                collision.gameObject.GetComponent<HeartBehaviour>().PickUp();
+                if (health_current > health_max)
+                    health_current = health_max;
+                interfaceScript.AdjustHeartMultipleTimes(interfaceScript.AddHalfHeart, healthAmount);
+                
+            }
+            else if (collision.gameObject.GetComponent<CoinBehaviour>() != null) {
+                numCoins += ((CoinBehaviour) collision.gameObject.GetComponent<CoinBehaviour>().PickUp()).Value;
+            }
+            else
+                backpack.Add(collision.gameObject.GetComponent<Item>().PickUp());   //might be null??
+            
+        }
+    }
 
 }
