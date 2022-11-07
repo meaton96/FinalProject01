@@ -10,6 +10,7 @@ TagManager:
   - Interface_HeartHalf
   - Player_Projectile
   - Item
+  - GameControl
   layers:
   - Default
   - TransparentFX

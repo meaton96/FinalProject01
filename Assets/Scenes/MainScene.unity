@@ -442,6 +442,7 @@ MonoBehaviour:
   heartDistance: 0.4
   hearts: []
   heartStartLoc: {x: -3.7, y: 1.7}
+  coinPreFabLoc: {x: 0, y: 0}
 --- !u!1 &849217359
 GameObject:
   m_ObjectHideFlags: 0
@@ -861,7 +862,7 @@ GameObject:
   - component: {fileID: 1457004608}
   m_Layer: 0
   m_Name: GameController
-  m_TagString: Untagged
+  m_TagString: GameControl
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -878,6 +879,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 094f5556cf950304186f90e31b67ba85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CoinPreFab: {fileID: 6814248822301087817, guid: 05ce816ad4b37e7469ea1a1d727f2dfd, type: 3}
+  HeartItemPreFab: {fileID: 4418599073605797474, guid: 6e66ceba131942d4aafa49c4fde21eae, type: 3}
 --- !u!4 &1457004609
 Transform:
   m_ObjectHideFlags: 0
