@@ -1019,6 +1019,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CoinPreFab: {fileID: 6814248822301087817, guid: 05ce816ad4b37e7469ea1a1d727f2dfd, type: 3}
   HeartItemPreFab: {fileID: 4418599073605797474, guid: 6e66ceba131942d4aafa49c4fde21eae, type: 3}
+  cameraMovementSpeed: 0.001
+  grassObjects:
+  - {fileID: 7914574933804756955, guid: 3d4d1be1fdfab9c4bb579c6a54d084c2, type: 3}
+  - {fileID: 6078962325246072219, guid: 0bf551eefa56149479b82a1a9c2f4263, type: 3}
+  - {fileID: 866924023779321600, guid: 47115b150ce106a428af5c6dcacf933a, type: 3}
+  - {fileID: 3401172638289830315, guid: 38c681bd35ca3854a9710c2e4d529904, type: 3}
+  - {fileID: 5034558860779348053, guid: a693dda133ee7064ebb624c10b1f0024, type: 3}
+  backgroundStartingLocation: {x: -10, y: 10}
+  backgroundCol: 30
+  backgroundRow: 30
+  playerObject: {fileID: 1203339803}
+  camMoveX: 0
+  camMoveY: 0
 --- !u!4 &1457004609
 Transform:
   m_ObjectHideFlags: 0
