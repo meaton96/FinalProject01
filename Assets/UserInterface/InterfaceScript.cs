@@ -57,10 +57,10 @@ public class InterfaceScript : MonoBehaviour {
 
         if (currentHeart.CompareTag(HEART_HALF_TAG)) {
             hearts[(int)curHearts] = Instantiate(heartFullPrefab, currentHeart.transform.position, Quaternion.identity);
+            curHearts++;
         }
         else {
             hearts[(int)curHearts] = Instantiate(heartHalfPrefab, currentHeart.transform.position, Quaternion.identity);
-            curHearts++;
         }
         Destroy(currentHeart);
     }
