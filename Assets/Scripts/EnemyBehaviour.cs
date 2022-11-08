@@ -43,9 +43,6 @@ public class EnemyBehaviour : MonoBehaviour
             else
                 drops.Push(gameObject.AddComponent<HeartBehaviour>());
         }
-        foreach (Item item in drops) {
-            //item.gameObject.SetActive(false);
-        }
 
     }
 
