@@ -9,16 +9,18 @@ public class EnemyBehaviour : MonoBehaviour
     private Rigidbody2D rb;
     private Animator animator;
     private GameObject player;
-    public float KnockBackAmount;
-    private Stack<Item> drops;                           
-    [SerializeField] private int numItemsDropped;
-    [SerializeField] private float itemSpawnRange;
+    //public float KnockBackAmount;
+    private Stack<Item> drops;
+    private int numItemsDropped;
+    private float itemSpawnRange;
 
     [SerializeField] protected float Health;
     //public GameObject enemy;
     // Start is called before the first frame update
     protected void Start()
     {
+        numItemsDropped = Random.Range(1, 5);
+        itemSpawnRange = .2f;
         Rb = GetComponent<Rigidbody2D>();
         GetAnimator = GetComponent<Animator>();
         Player = GameObject.FindWithTag("Player");

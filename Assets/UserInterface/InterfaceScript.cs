@@ -17,6 +17,7 @@ public class InterfaceScript : MonoBehaviour {
     private double maxHearts, curHearts;
     public Vector2 heartStartLoc;
     [SerializeField] private TextMeshProUGUI coinText;
+
     // Start is called before the first frame update
     void Start() {
         maxHearts = player.health_max / 2.0;
@@ -35,6 +36,7 @@ public class InterfaceScript : MonoBehaviour {
             hearts[x] = Instantiate(heartFullPrefab,
                 new Vector3(heartStartLoc.x + (x * heartDistance), heartStartLoc.y, 0),
                 Quaternion.identity);
+            hearts[x].transform.SetParent(GameObject.FindWithTag("MainCamera").transform);
         }
     }
     public void AdjustHearts(AdjustHeart adjustHeart) {
