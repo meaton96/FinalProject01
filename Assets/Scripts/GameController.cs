@@ -12,7 +12,7 @@ public class GameController : MonoBehaviour {
     [SerializeField] int backgroundCol, backgroundRow;
     private const float grassSquareSize = .76f;
     [SerializeField] GameObject playerObject;
-    public float camMoveX, camMoveY;
+    //public float camMoveX, camMoveY;
 
     // Start is called before the first frame update
     void Start() {
@@ -21,7 +21,6 @@ public class GameController : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        AdjustCamera();
     }
     private void CreateBackground() {
         for (int x = 0; x < backgroundCol; x++) {
@@ -33,24 +32,5 @@ public class GameController : MonoBehaviour {
             }
         }
     }
-    private void AdjustCamera() {
-
-        /*  float xAxisValue = Input.GetAxisRaw("Horizontal");
-          float zAxisValue = Input.GetAxisRaw("Vertical");
-          if (Camera.current != null) {
-              Camera.current.transform.Translate(new Vector3(xAxisValue / 200f, zAxisValue / 200f, 0f));
-          }
-          */
-        if (Camera.current != null) {
-
-            Vector3 dif = Camera.current.transform.position - playerObject.transform.position;
-            while (dif.x > 1.5f || dif.y > 1.5f) {
-                dif = Camera.current.transform.position - playerObject.transform.position;
-                Camera.current.transform.Translate(dif.x * cameraMovementSpeed * Time.deltaTime,
-                    dif.y * cameraMovementSpeed * Time.deltaTime,
-                    -10f);
-            }
-        }
-        
-    }
+    
 }

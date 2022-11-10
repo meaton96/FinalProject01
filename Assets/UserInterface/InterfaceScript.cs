@@ -51,6 +51,7 @@ public class InterfaceScript : MonoBehaviour {
         InstantiateHearts();
     }
     public void AddHalfHeart() {
+        //index out of bounds pls fix  
         GameObject currentHeart = hearts[(int)curHearts];
         if (curHearts >= hearts.Length - 1 && currentHeart.CompareTag(HEART_FULL_TAG))
             return;
