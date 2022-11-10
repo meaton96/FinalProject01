@@ -17,7 +17,7 @@ public class EnemyBehaviour : MonoBehaviour
     [SerializeField] protected float Health;
     //public GameObject enemy;
     // Start is called before the first frame update
-    protected void Start()
+    protected virtual void Start()
     {
         numItemsDropped = Random.Range(1, 5);
         itemSpawnRange = .2f;

@@ -22,6 +22,7 @@ public class Projectile : MonoBehaviour
     private void FixedUpdate() {
         Vector3 lerpPosition = Vector3.Lerp(transform.position, direction, speed);
         transform.position = lerpPosition;
+        //translate towards player 
     }
     public void SetDirection(Vector2 dir) { direction = dir; }
     public void SetSpeed(float speed) { this.speed = speed; }
@@ -34,7 +35,7 @@ public class Projectile : MonoBehaviour
         }
         if (enemyObject != null) {
             Physics2D.IgnoreCollision(gameObject.GetComponent<Collider2D>(),
-                enemyObject.GetComponent<Collider2D>());
+                enemyObject.GetComponentInChildren<Collider2D>());
         }
 
     }

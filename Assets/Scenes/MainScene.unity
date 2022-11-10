@@ -1254,7 +1254,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CoinPreFab: {fileID: 6814248822301087817, guid: 05ce816ad4b37e7469ea1a1d727f2dfd, type: 3}
   HeartItemPreFab: {fileID: 4418599073605797474, guid: 6e66ceba131942d4aafa49c4fde21eae, type: 3}
-  MagicianBallPreFab: {fileID: 0}
+  MagicianBallPreFab: {fileID: 2447178841208502722, guid: a960b73ae621975498f9b70b4ba84951, type: 3}
   cameraMovementSpeed: 1
   grassObjects:
   - {fileID: 7914574933804756955, guid: 3d4d1be1fdfab9c4bb579c6a54d084c2, type: 3}
