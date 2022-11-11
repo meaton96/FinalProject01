@@ -35,7 +35,8 @@ public class MagicianBehaviour : EnemyBehaviour
     public override void AttackPlayer() {
         GameObject ball = Instantiate(GameObject.FindWithTag("GameControl").GetComponent<GameController>().MagicianBallPreFab, transform.position, Quaternion.identity);
         Projectile projScript = ball.GetComponent<Projectile>();
-        projScript.SetDirection(GameObject.FindWithTag("Player").transform.position);
+        Vector3 playerPos = GameObject.FindWithTag("Player").transform.position;
+        projScript.SetDirection((transform.position - playerPos).normalized * -1);
         projScript.SetSpeed(projectileSpeed);
         projScript.SetCollisionIgnores();
     }

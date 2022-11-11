@@ -20,22 +20,34 @@ public class Projectile : MonoBehaviour
             
     }
     private void FixedUpdate() {
-        Vector3 lerpPosition = Vector3.Lerp(transform.position, direction, speed);
-        transform.position = lerpPosition;
-        //translate towards player 
+       // Vector3 lerpPosition = Vector3.Lerp(transform.position, direction, speed * Time.deltaTime);
+       // transform.position = lerpPosition;
+
+        transform.Translate(direction.normalized * (speed * Time.deltaTime));
     }
     public void SetDirection(Vector2 dir) { direction = dir; }
     public void SetSpeed(float speed) { this.speed = speed; }
     public void SetCollisionIgnores() {
-        GameObject itemObject = GameObject.FindWithTag("Item");
-        GameObject enemyObject = GameObject.FindWithTag("Enemy");
-        if (itemObject != null) {
-            Physics2D.IgnoreCollision(gameObject.GetComponent<Collider2D>(),
-                itemObject.GetComponent<Collider2D>());
+        GameObject[] itemObject = GameObject.FindGameObjectsWithTag("Item");
+        GameObject[] enemyObject = GameObject.FindGameObjectsWithTag("Enemy");
+        GameObject[] borderObject = GameObject.FindGameObjectsWithTag("BorderRocks");
+        if (borderObject != null) {
+            for (int x = 0; x < itemObject.Length; x++) {
+                Physics2D.IgnoreCollision(gameObject.GetComponent<Collider2D>(),
+                itemObject[x].GetComponentInChildren<Collider2D>());
+            }
         }
-        if (enemyObject != null) {
-            Physics2D.IgnoreCollision(gameObject.GetComponent<Collider2D>(),
-                enemyObject.GetComponentInChildren<Collider2D>());
+        if (borderObject != null) {
+            for (int x = 0; x < enemyObject.Length; x++) {
+                Physics2D.IgnoreCollision(gameObject.GetComponent<Collider2D>(),
+                enemyObject[x].GetComponentInChildren<Collider2D>());
+            }
+        }
+        if (borderObject != null) {
+            for (int x = 0; x < borderObject.Length; x++) {
+                Physics2D.IgnoreCollision(gameObject.GetComponent<Collider2D>(),
+                borderObject[x].GetComponentInChildren<Collider2D>());
+            }
         }
 
     }

@@ -11,6 +11,8 @@ TagManager:
   - Player_Projectile
   - Item
   - GameControl
+  - Scenery
+  - BorderRocks
   layers:
   - Default
   - TransparentFX
