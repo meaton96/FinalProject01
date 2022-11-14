@@ -18,6 +18,7 @@ public class InterfaceScript : MonoBehaviour {
     private double maxHearts, curHearts;
     public Vector2 heartStartLoc;
     [SerializeField] private TextMeshProUGUI coinText;
+    [SerializeField] private TextMeshProUGUI enemyRemainingText;
 
     // Start is called before the first frame update
     void Start() {
@@ -32,6 +33,9 @@ public class InterfaceScript : MonoBehaviour {
     // Update is called once per frame
     void Update() {
 
+    }
+    public void UpdateEnemiesRemaining(int numEnemies) {
+        enemyRemainingText.SetText("Remaining " + numEnemies);
     }
     //create, instantiate, and fill the heart array with full hearts, also attack it to the main camera 
     private void InstantiateHearts() {
@@ -67,7 +71,8 @@ public class InterfaceScript : MonoBehaviour {
         if (currentHeart.CompareTag(HEART_HALF_TAG)) {
             hearts[(int)curHearts] = Instantiate(heartFullPrefab, currentHeart.transform.position, Quaternion.identity);
             hearts[(int)curHearts].transform.SetParent(GameObject.FindWithTag("MainCamera").transform);
-            curHearts++;
+            if (curHearts < maxHearts - 1)
+                curHearts++;
         }
         else {
             //replace empty heart with half heart

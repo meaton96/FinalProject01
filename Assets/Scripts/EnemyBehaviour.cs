@@ -11,35 +11,39 @@ public class EnemyBehaviour : MonoBehaviour {
     private Stack<Item> drops;  //stack for item drops when enemy dies
     private int numItemsDropped; //number of items the enemy drops on death
     private float itemSpawnRange;   //distance for spawning items in a circle around the enemy location
-    private float wanderDirectionChangeCounter;
-    private const int DAMAGE_ON_COLLISION = 1;
-    [SerializeField] private float wanderSpeedMultiplier;
-    [SerializeField] private float wanderDirectionChangeTime;
-    [SerializeField] protected float movementSpeed;
-    [SerializeField] protected float attackRange;
-    [SerializeField] protected float aggroRange;
-    public enum State {
-        Attacking,
-        Aggroed,
-        Dormant,
-        Wandering
+    private float wanderDirectionChangeCounter;     //counter to time duration of wander direction
+    private const int DAMAGE_ON_COLLISION = 1;      //amount of damage inflected on the player when running into them baseline
+                                                    //1 = 1/2 a heart
+    [SerializeField] private float wanderSpeedMultiplier;       //how slower/faster the enemy moves while wandering vs aggroed
+    [SerializeField] private float wanderDirectionChangeTime;   //the time set during the wandering movement before changing directions
+                                                                //in seconds
+    [SerializeField] protected float movementSpeed;             //the base movement speed of the enemy
+    [SerializeField] protected float attackRange;               //the range the enemy must get to before attacking the player
+    [SerializeField] protected float aggroRange;                //the range the enmy must get to before starting to move toward the player
+    [SerializeField] protected float Health;
+    public enum State {         //state for storing the current enemy actions
+        Attacking,  //actively attempting to attack the player
+        Aggroed,    //the player is in range to move towards
+        Dormant,    //do nothing
+        Wandering   //move around in a random direction and change very X seconds
     }
     protected State state;
 
 
-    [SerializeField] protected float Health;
-    //public GameObject enemy;
+          
+
+
     // Start is called before the first frame update
     protected virtual void Start() {
-        wanderSpeedMultiplier = .5f;
-        wanderDirectionChangeTime = 10f;
+        wanderSpeedMultiplier = .5f;                    //default wandering speed is 1/2 regular movement speed
+        wanderDirectionChangeTime = 10f;                //set change direction time to 10 seconds
         numItemsDropped = Random.Range(1, 5);           //random number of drops 1-5 to be replaced by different number per enemy 
         itemSpawnRange = .2f;                           //radius of item spawn circle
-        wanderDirectionChangeCounter = 0;
+        wanderDirectionChangeCounter = 0;               
         Rb = GetComponent<Rigidbody2D>();
         GetAnimator = GetComponent<Animator>();
         Player = GameObject.FindWithTag("Player");
-        state = State.Wandering;
+        state = State.Wandering;                        //set default state
         MakeDrops();
         SetCollisionIgnores();
 
@@ -89,6 +93,7 @@ public class EnemyBehaviour : MonoBehaviour {
     private void MoveToPlayer() {
         //just sets the velocity maybe add an attack animation later
         SetVelocity(movementSpeed, GetVectorToPlayer());
+        //play attack animation or wander animation if the player moved closer or father away
         if (GetVectorToPlayer().magnitude <= attackRange)
             state = State.Attacking;
         if (GetVectorToPlayer().magnitude >= aggroRange) {
@@ -97,6 +102,7 @@ public class EnemyBehaviour : MonoBehaviour {
         }
 
     }
+    //change direction randomly every X seconds, swap to aggroed if in range
     private void Wander() {
         if (wanderDirectionChangeCounter <= 1) {
             float angle = Random.Range(0, 2 * Mathf.PI);
@@ -112,9 +118,8 @@ public class EnemyBehaviour : MonoBehaviour {
     }
     //called to damage the player when the enemy collides with them
 
-    public virtual void AttackPlayer() {
-
-    }
+    //implemented per enemy type
+    public virtual void AttackPlayer() {}
     //sets velocity to move towards player at the passed in value of movement speed
     protected void SetVelocity(float movementSpeed, Vector2 direction) {
         if (rb != null) {
