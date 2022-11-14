@@ -5,7 +5,7 @@ using UnityEngine;
 public class WeaponHitBoxScript : MonoBehaviour
 {
     // Start is called before the first frame update
-    [SerializeField] private float damageValue;
+    public float damageValue;
     void Start()
     {
         
@@ -16,9 +16,5 @@ public class WeaponHitBoxScript : MonoBehaviour
     {
         
     }
-    void OnTriggerEnter2D(Collider2D other) {
-        if (other.gameObject.CompareTag("Enemy")) {
-            other.GetComponent<EnemyBehaviour>().Damage(damageValue);
-        }
-    }
+
 }

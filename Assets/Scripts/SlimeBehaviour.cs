@@ -1,28 +1,21 @@
-using System.Collections;
+    using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class SlimeBehaviour : EnemyBehaviour
 {
     // Start is called before the first frame update
-    [SerializeField] float movementSpeed;
-    [SerializeField] float attackRange;
-    
-
-    void OnCollisionEnter2D(Collision2D collision) {
-        KnockedByPlayer(collision);
+    protected override void Start() {
+        movementSpeed = .5f;
+        attackRange = .2f;
+        aggroRange = 2f;
+        base.Start();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        //just sets the velocity maybe add an attack animation later
-        SetVelocity(movementSpeed);
-        if (GetVectorToPlayer().magnitude <= attackRange) {
-            GetAnimator.SetTrigger("Attack");
-            AttackPlayer();
-        }
-    }
+
+
+
 
     
 }

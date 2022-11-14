@@ -43,8 +43,8 @@ public class GameController : MonoBehaviour {
     //creates a square border of large rocks so the player cannot leave the game world
     private void CreateOuterBarrier() {
         borderStartLocation = new Vector2(backgroundStartingLocation.x + 2.9f, backgroundStartingLocation.y - 1.6f);
-        numBorderRocksX = (int)((backgroundCol * GRASS_SIZE) / LARGE_ROCK_SIZE) - 4;
-        numBorderRocksY = (int)((backgroundRow * GRASS_SIZE) / LARGE_ROCK_SIZE) - 2;
+        numBorderRocksX = (int)(backgroundCol * GRASS_SIZE / LARGE_ROCK_SIZE) - 4;
+        numBorderRocksY = (int)(backgroundRow * GRASS_SIZE / LARGE_ROCK_SIZE) - 2;
         for (int x = 0; x < numBorderRocksX; x++) {
             for (int y = 0; y < numBorderRocksY; y++) {
                 if (x == 0 || x == numBorderRocksX - 1 || y == 0 || y == numBorderRocksY - 1) {

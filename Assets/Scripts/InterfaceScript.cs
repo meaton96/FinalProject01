@@ -66,11 +66,13 @@ public class InterfaceScript : MonoBehaviour {
         //replace half heart with full heart
         if (currentHeart.CompareTag(HEART_HALF_TAG)) {
             hearts[(int)curHearts] = Instantiate(heartFullPrefab, currentHeart.transform.position, Quaternion.identity);
+            hearts[(int)curHearts].transform.SetParent(GameObject.FindWithTag("MainCamera").transform);
             curHearts++;
         }
         else {
             //replace empty heart with half heart
             hearts[(int)curHearts] = Instantiate(heartHalfPrefab, currentHeart.transform.position, Quaternion.identity);
+            hearts[(int)curHearts].transform.SetParent(GameObject.FindWithTag("MainCamera").transform);
         }
         //destroy the old heart
         Destroy(currentHeart);
@@ -83,16 +85,18 @@ public class InterfaceScript : MonoBehaviour {
         //replace half heart with empty heart
         if (currentHeart.CompareTag(HEART_HALF_TAG)) {
             hearts[(int)curHearts] = Instantiate(heartEmptyPrefab, currentHeart.transform.position, Quaternion.identity);
+            hearts[(int)curHearts].transform.SetParent(GameObject.FindWithTag("MainCamera").transform);
             curHearts--;
         }
         else {
             //replace full heart with half heart
             hearts[(int)curHearts] = Instantiate(heartHalfPrefab, currentHeart.transform.position, Quaternion.identity);
+            hearts[(int)curHearts].transform.SetParent(GameObject.FindWithTag("MainCamera").transform);
 
         }
         Destroy(currentHeart);
     }
-    //remove a full heart, slightly more efficient than removing the half heart twice
+    /*remove a full heart, slightly more efficient than removing the half heart twice
     public void RemoveFullHeart() {
         if (curHearts < 0)
             return;
@@ -100,20 +104,23 @@ public class InterfaceScript : MonoBehaviour {
         //empty the current half heart then replace the next heart in the line with a half heart
         if (currentHeart.CompareTag(HEART_HALF_TAG)) {
             hearts[(int)curHearts] = Instantiate(heartEmptyPrefab, currentHeart.transform.position, Quaternion.identity);
+            hearts[(int)curHearts].transform.SetParent(GameObject.FindWithTag("MainCamera").transform);
             curHearts--;
             Destroy(currentHeart);
             currentHeart = hearts[(int)curHearts];
             hearts[(int)curHearts] = Instantiate(heartHalfPrefab, currentHeart.transform.position, Quaternion.identity);
+            hearts[(int)curHearts].transform.SetParent(GameObject.FindWithTag("MainCamera").transform);
             Destroy(currentHeart);
         }
         //remove the current full heart and replace it with an empty heart
         else {
             hearts[(int)curHearts] = Instantiate(heartEmptyPrefab, currentHeart.transform.position, Quaternion.identity);
+            hearts[(int)curHearts].transform.SetParent(GameObject.FindWithTag("MainCamera").transform);
             Destroy(currentHeart);
             curHearts--;
         }
 
-    }
+    }*/
     //update coin text by pulling amount of coins from player
     public void UpdateCoinText(int numCoins) {
         coinText.text = numCoins.ToString();

@@ -6,6 +6,7 @@ public class Projectile : MonoBehaviour
 {
     private Vector2 direction;
     private float speed;
+    private int damage;
     // Start is called before the first frame update
     void Start()
     {
@@ -25,30 +26,31 @@ public class Projectile : MonoBehaviour
 
         transform.Translate(direction.normalized * (speed * Time.deltaTime));
     }
+    private void OnCollisionEnter2D(Collision2D collision) {
+        Destroy(gameObject);
+        if (collision.gameObject.CompareTag("Player")) {
+            collision.gameObject.GetComponent<PlayerBehaviour>().DamagePlayerHealth(damage);
+        }
+    }
     public void SetDirection(Vector2 dir) { direction = dir; }
     public void SetSpeed(float speed) { this.speed = speed; }
+    //tell the projectile to ignore all enemies and items
     public void SetCollisionIgnores() {
         GameObject[] itemObject = GameObject.FindGameObjectsWithTag("Item");
         GameObject[] enemyObject = GameObject.FindGameObjectsWithTag("Enemy");
-        GameObject[] borderObject = GameObject.FindGameObjectsWithTag("BorderRocks");
-        if (borderObject != null) {
+        if (itemObject != null) {
             for (int x = 0; x < itemObject.Length; x++) {
                 Physics2D.IgnoreCollision(gameObject.GetComponent<Collider2D>(),
                 itemObject[x].GetComponentInChildren<Collider2D>());
             }
         }
-        if (borderObject != null) {
+        if (enemyObject != null) {
             for (int x = 0; x < enemyObject.Length; x++) {
                 Physics2D.IgnoreCollision(gameObject.GetComponent<Collider2D>(),
                 enemyObject[x].GetComponentInChildren<Collider2D>());
             }
         }
-        if (borderObject != null) {
-            for (int x = 0; x < borderObject.Length; x++) {
-                Physics2D.IgnoreCollision(gameObject.GetComponent<Collider2D>(),
-                borderObject[x].GetComponentInChildren<Collider2D>());
-            }
-        }
 
     }
+    public int Damage { set { damage = value; } } 
 }

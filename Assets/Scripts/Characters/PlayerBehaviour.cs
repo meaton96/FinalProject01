@@ -140,7 +140,7 @@ public class PlayerBehaviour : MonoBehaviour {
         }
 
     }
-    //Not Yet Implemented shotting arrow method
+    //Not Yet Implemented shooting arrow method
     private void ShootArrow() {
         Vector3 playerPos = transform.position;
         Vector3 mousePos = Input.mousePosition;
@@ -167,38 +167,44 @@ public class PlayerBehaviour : MonoBehaviour {
         transform.Rotate(0, 180, 0);
         facingRight = !facingRight;
     }
-    private Vector2 GetVectorToEnemy(GameObject enemy) {
-        return (enemy.GetComponent<Rigidbody2D>().position - rb.position).normalized;
-    }
+
+    //kill the player, destroy the game object and load the end game scene for now
     public void PlayerDeath() {
         Destroy(gameObject);
         SceneManager.LoadScene(END_GAME_SCENE, LoadSceneMode.Single);
     }
-    public void DamagePlayerHealth(Damage dam) {
-        if (dam == Damage.Half) {
-            interfaceScript.RemoveHeartHalf();
+    //damage the player health by either one half or one full heart
+    public void DamagePlayerHealth(int damageDone) {
+        health_current -= damageDone;
+        if (health_current <= 0)
+            PlayerDeath();
+        else {
+            interfaceScript.AdjustHeartMultipleTimes(interfaceScript.RemoveHeartHalf, damageDone);
         }
-        else
-            interfaceScript.RemoveFullHeart();
-        health_current--;
     }
 
     private void OnCollisionEnter2D(Collision2D collision) {
-        if (collision.gameObject.CompareTag("Item")) {
+        if (collision.gameObject.CompareTag("Item")) {                                                  //player collided with an item
             if (collision.gameObject.GetComponent<HeartBehaviour>() != null) {
+                //item is a heart so heal the player based on the amount the heart heals
                 int healthAmount = (int)collision.gameObject.GetComponent<HeartBehaviour>().HealAmount;
                 health_current += healthAmount;
+                //tell the heart object that it was picked up
                 collision.gameObject.GetComponent<HeartBehaviour>().PickUp();
+                //make sure that the health can't go above maximum
                 if (health_current > health_max)
                     health_current = health_max;
+                //adjust the health interface by adding half hearts the number of times the heal amount is
                 interfaceScript.AdjustHeartMultipleTimes(interfaceScript.AddHalfHeart, healthAmount);
                 
             }
             else if (collision.gameObject.GetComponent<CoinBehaviour>() != null) {
+                //the item was a coin so add to the coin tracker and update the interface
                 numCoins += ((CoinBehaviour) collision.gameObject.GetComponent<CoinBehaviour>().PickUp()).Value;
                 interfaceScript.UpdateCoinText(numCoins);
             }
             else
+                //item was not coin or heart so pick it up and add it to the backpack (NYI)
                 backpack.Add(collision.gameObject.GetComponent<Item>().PickUp());   //might be null??
             
         }

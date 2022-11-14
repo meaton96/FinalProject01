@@ -414,6 +414,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 152ba5d0939e9d84d8b4d31097e22d95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  wanderSpeedMultiplier: 0
+  wanderDirectionChangeTime: 0
+  movementSpeed: 0
+  attackRange: 0
+  aggroRange: 0
   Health: 0
 --- !u!1 &837173068
 GameObject:
@@ -823,8 +828,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e176db7e803f4124ea7911f82f1dc897, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  wanderSpeedMultiplier: 0
+  wanderDirectionChangeTime: 0
+  movementSpeed: 0
+  attackRange: 0
+  aggroRange: 0
   Health: 1
   projectileSpeed: 1.5
+  AttackDelayCounter: 0
 --- !u!50 &1036965094
 Rigidbody2D:
   serializedVersion: 4
@@ -960,7 +971,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c11caa5436a76944ab4cdc856ff2953, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damageValue: 0
+  damageValue: 1
 --- !u!50 &1189354666
 Rigidbody2D:
   serializedVersion: 4
@@ -1255,7 +1266,6 @@ MonoBehaviour:
   CoinPreFab: {fileID: 6814248822301087817, guid: 05ce816ad4b37e7469ea1a1d727f2dfd, type: 3}
   HeartItemPreFab: {fileID: 4418599073605797474, guid: 6e66ceba131942d4aafa49c4fde21eae, type: 3}
   MagicianBallPreFab: {fileID: 2447178841208502722, guid: a960b73ae621975498f9b70b4ba84951, type: 3}
-  cameraMovementSpeed: 1
   grassObjects:
   - {fileID: 7914574933804756955, guid: 3d4d1be1fdfab9c4bb579c6a54d084c2, type: 3}
   - {fileID: 6078962325246072219, guid: 0bf551eefa56149479b82a1a9c2f4263, type: 3}
