@@ -16,6 +16,7 @@ public class SlimeBehaviour : EnemyBehaviour
     // Update is called once per frame
     void Update()
     {
+        //just sets the velocity maybe add an attack animation later
         SetVelocity(movementSpeed);
         if (GetVectorToPlayer().magnitude <= attackRange) {
             GetAnimator.SetTrigger("Attack");

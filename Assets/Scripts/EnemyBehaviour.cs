@@ -9,18 +9,17 @@ public class EnemyBehaviour : MonoBehaviour
     private Rigidbody2D rb;
     private Animator animator;
     private GameObject player;
-    //public float KnockBackAmount;
-    private Stack<Item> drops;
-    private int numItemsDropped;
-    private float itemSpawnRange;
+    private Stack<Item> drops;  //stack for item drops when enemy dies
+    private int numItemsDropped; //number of items the enemy drops on death
+    private float itemSpawnRange;   //distance for spawning items in a circle around the enemy location
 
     [SerializeField] protected float Health;
     //public GameObject enemy;
     // Start is called before the first frame update
     protected virtual void Start()
     {
-        numItemsDropped = Random.Range(1, 5);
-        itemSpawnRange = .2f;
+        numItemsDropped = Random.Range(1, 5);           //random number of drops 1-5 to be replaced by different number per enemy 
+        itemSpawnRange = .2f;                           //radius of item spawn circle
         Rb = GetComponent<Rigidbody2D>();
         GetAnimator = GetComponent<Animator>();
         Player = GameObject.FindWithTag("Player");
@@ -28,13 +27,15 @@ public class EnemyBehaviour : MonoBehaviour
         SetCollisionIgnores();
 
     }
+    //ignore collisions with items
     protected void SetCollisionIgnores() {
         GameObject itemObject = GameObject.FindWithTag("Item");
         if (itemObject != null)
             Physics2D.IgnoreCollision(gameObject.GetComponent<Collider2D>(),
                 GameObject.FindWithTag("Item").GetComponent<Collider2D>());
     }
-    
+    //create and populate the stack of drops
+    //randomly assigns a coin or heart currently
     protected void MakeDrops() {
         drops = new Stack<Item>();
         //placeholder 
@@ -57,6 +58,7 @@ public class EnemyBehaviour : MonoBehaviour
     {
         
     }
+    //called to damage the player when the enemy collides with them
     protected void KnockedByPlayer(Collision2D collision) {
         if (collision.gameObject.CompareTag("Player")) {
 
@@ -67,10 +69,12 @@ public class EnemyBehaviour : MonoBehaviour
     public virtual void AttackPlayer() {
         
     }
+    //sets velocity to move towards player at the passed in value of movement speed
     protected void SetVelocity(float movementSpeed) {
         rb.velocity = GetVectorToPlayer().normalized * movementSpeed;
         animator.SetFloat("Speed", Mathf.Abs(rb.velocity.magnitude));
     }
+    //returns a Vector2 that represents the vector from this enemy to the player
     protected Vector2 GetVectorToPlayer() {
         if (player != null)
             return (player.GetComponent<Rigidbody2D>().position - rb.position);
@@ -81,12 +85,15 @@ public class EnemyBehaviour : MonoBehaviour
             Health--;
         }
     }
+    //damage the enemy, dies if its health goes below 0
     public void Damage(float damage) {
         Health -= damage;
         if (Health <= 0)
             Die();
 
     }
+    //destroys the game object killing the enemy
+    //pops the stack of drops and spawns them 
     private void Die() {
         while (drops.TryPop(out Item i)) {
             float theta = Random.Range(0, 2 * Mathf.PI);

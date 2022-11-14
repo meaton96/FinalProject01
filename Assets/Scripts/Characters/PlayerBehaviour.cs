@@ -7,15 +7,16 @@ using UnityEngine.SceneManagement;
 
 
 public class PlayerBehaviour : MonoBehaviour {
-    [SerializeField] private bool facingRight;
-    [SerializeField] private float rollSpeed;
-    private float rollSpeedCounter;
-    [SerializeField] private float rollSpeedReduction;
-    private Vector3 rollDir;
-    private List<Item> backpack;
+    [SerializeField] private bool facingRight;                          //if the player is facing right or left
+    [SerializeField] private float rollSpeed;                           //the speed the player moves when rolling
+    private float rollSpeedCounter;                                     //float to count the duration of the player roll
+    [SerializeField] private float rollSpeedReduction;                  //how fast the roll speed decreases over time
+    private Vector3 rollDir;                                            //vector diretion for the player roll
+    private List<Item> backpack;                                        //list of items in the player's backpack
 
-    public enum Damage { Half, Full }
-    private const string END_GAME_SCENE = "End Game";
+    public enum Damage { Half, Full }                                   //enum to represent a full heart damage or half heart damage event
+    //string constants for player animations
+    private const string END_GAME_SCENE = "End Game";                   
     private const string ANIM_ATTACK_TAG = "Attack";
     private const string ANIM_SHOOT_TAG = "RangedAttack";
     private const string ANIM_ROLL_TAG = "Roll";
@@ -23,35 +24,26 @@ public class PlayerBehaviour : MonoBehaviour {
     private const string ANIM_CELEBRATE_TAG = "Celebrate";
     private const string ANIM_SPEED_TAG = "Speed";
 
-    private enum State {
-        Normal,
-        Roll
-    }
+    //enum representing if the player is rolling or not
+    private enum State { Normal, Roll }
     private State state;
 
-    float horizontalValue;
-    float verticalValue;
     public int health_current = 10;
     public int health_max = 10;
-    public InterfaceScript interfaceScript;
-    public float speed;
-    public float playerKnockbackOnEnemyCollision;
-    public int numArrowsFired;
-    public int melee_damage;
-    public int ranged_damage;
-    public GameObject arrowGameObject;
-    private int numCoins { get; set; }
+    public InterfaceScript interfaceScript;         //reference to the User Interface to update it
+    public float speed;                             //player movement speed
+    public float playerKnockbackOnEnemyCollision;   //player knockback amount when colliding with an enemy (unused)
+    public int numArrowsFired;                      //number of arrows fired when shooting bow (unused)
+    public int melee_damage;                        //amount of damage that the player does when using melee weapon (unused)
+    public int ranged_damage;                       //amount of damage the player does when firing a ranged weapon (unused)
+    public GameObject arrowGameObject;              //reference to arrow prefab
+    private int numCoins { get; set; }              //numnber of coins the player has
     Rigidbody2D rb;
-
-    // reference var for our Animator Component
     Animator animator;
 
     private void Start() {
-        // gets reference to Rigidbody2D on same GameObject
         rb = GetComponent<Rigidbody2D>();
         backpack = new();
-
-        // get reference to Animator on the same GameObject
         animator = GetComponent<Animator>();
         state = State.Normal;
 
@@ -59,21 +51,22 @@ public class PlayerBehaviour : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
+        //if in normal state then handle movement and animation
+        //also check for player death
         switch (state) {
             case State.Normal:
-                //CheckAxes();
                 HandleMovement();
                 Animate();
-                //FlipSprite();
                 if (health_current <= 0)
                     animator.SetTrigger(ANIM_DEATH_TAG);
                 break;
-            case State.Roll:
+            case State.Roll:        //if rolling just handle the roll
                 HandleRoll();
                 break;
         }
 
     }
+    //handle player movement by accepting keyboard input
     public void HandleMovement() {
         float moveX = 0f;
         float moveY = 0f;
@@ -91,39 +84,23 @@ public class PlayerBehaviour : MonoBehaviour {
         }
         Vector2 movement = speed * Time.deltaTime * new Vector2(moveX, moveY);
 
+        //flip the sprite when changing directions
         if (moveX < 0 && facingRight)
             FlipSprite();
         if (moveX > 0 && !facingRight)
             FlipSprite();
 
+        //set position and velocity
         rb.position += movement;
         rb.velocity = movement;
+        //tell the animator to play walking animation 
         if (movement.magnitude > 0)
             animator.SetFloat(ANIM_SPEED_TAG, 1);
         else
             animator.SetFloat(ANIM_SPEED_TAG, 0);
     }
-    private bool TryMove(Vector3 moveDir, float speed) {
-        Vector3 move = moveDir;
-        bool canMove = CanMove(moveDir, speed);
-        if (!canMove) {
-            move = new Vector3(moveDir.x, 0f).normalized;
-            canMove = move.x != 0f && CanMove(move, speed);
-            if (!canMove) {
-                move = new Vector3(0f, moveDir.y).normalized;
-                canMove = moveDir.y != 0f && CanMove(move, speed);
-            }
-        }
-        if (canMove) {
-            transform.position += move * speed;
-            return true;
-        }
-        else
-            return false;
-    }
-    private bool CanMove(Vector3 moveDir, float distance) {
-        return Physics2D.Raycast(transform.position, moveDir, distance).collider == null;
-    }
+    //start the player roll
+    //set the state and set rollDir vector 
     private void StartRoll() {
         state = State.Roll;
         if (rb.velocity.magnitude < .05f) {
@@ -135,10 +112,9 @@ public class PlayerBehaviour : MonoBehaviour {
             else
                 rollDir = rb.velocity.normalized * -1;
         }
-        // rollDir = (Input.mousePosition - transform.position).normalized;
-        //Debug.Log("(" + rollDir.x + "," + rollDir.y + ")");
-        rollSpeedCounter = rollSpeed;
+        rollSpeedCounter = rollSpeed;   //reset the rollspeed counter to the roll speed
     }
+    //update player position and adjust the roll counter over time to tell when its time to stop the roll animation
     private void HandleRoll() {
         if (facingRight)
             transform.position += rollSpeed * Time.deltaTime * rollDir;
@@ -146,21 +122,11 @@ public class PlayerBehaviour : MonoBehaviour {
             transform.position -= rollSpeed * Time.deltaTime * rollDir;
         rollSpeedCounter -= rollSpeedCounter * Time.deltaTime * rollSpeedReduction;
 
+        //roll is over reset state to normal ending the roll
         if (rollSpeedCounter <= 1)
             state = State.Normal;
     }
-
-    void FixedUpdate() {
-        // call physics-related methods like setvelocity in FixedUpdate
-
-        // Use either Set Velocity or ForceMove. Not both. They are different movement ideas
-
-        //SetVelocity();
-
-        //ForceMove();
-    }
-
-
+    //set animation tags based on player input, rolling or attacking
     void Animate() {
         if (Input.GetMouseButtonDown(0)) {
             animator.SetTrigger(ANIM_ATTACK_TAG);
@@ -174,7 +140,7 @@ public class PlayerBehaviour : MonoBehaviour {
         }
 
     }
-
+    //Not Yet Implemented shotting arrow method
     private void ShootArrow() {
         Vector3 playerPos = transform.position;
         Vector3 mousePos = Input.mousePosition;
