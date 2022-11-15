@@ -37,7 +37,8 @@ public class GameController : MonoBehaviour {
             SpawnEnemyWave(15);
         }
         else {
-            playerObject.GetComponent<PlayerBehaviour>().interfaceScript.UpdateEnemiesRemaining(NumEnemiesLeft(currentEnemies));
+            if (playerObject != null)
+                playerObject.GetComponent<PlayerBehaviour>().interfaceScript.UpdateEnemiesRemaining(NumEnemiesLeft(currentEnemies));
         }
     }
     private bool AllAreNull(GameObject[] enemies) {
@@ -60,12 +61,12 @@ public class GameController : MonoBehaviour {
     }
 
     private void SpawnEnemyWave(int numEnemies) {
-        //constraints not right *********************************************************
+        //constraints not right ********************************************************
         float leftConstraint, topConstraint, rightConstraint, bottomConstraint;
-        leftConstraint = backgroundStartingLocation.x + LARGE_ROCK_SIZE +.5f;   
-        topConstraint = backgroundStartingLocation.y - LARGE_ROCK_SIZE - .5f;
-        rightConstraint = leftConstraint + LARGE_ROCK_SIZE * (numBorderRocksX);
-        bottomConstraint = topConstraint - LARGE_ROCK_SIZE * (numBorderRocksY);
+        leftConstraint = backgroundStartingLocation.x + LARGE_ROCK_SIZE * 3;   
+        topConstraint = backgroundStartingLocation.y - LARGE_ROCK_SIZE * 3;
+        rightConstraint = leftConstraint + LARGE_ROCK_SIZE * numBorderRocksX - LARGE_ROCK_SIZE;
+        bottomConstraint = topConstraint - LARGE_ROCK_SIZE * numBorderRocksY + LARGE_ROCK_SIZE;
 
         currentEnemies = new GameObject[numEnemies];
         for (int i = 0; i < numEnemies; i++) {

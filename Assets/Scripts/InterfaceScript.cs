@@ -14,25 +14,26 @@ public class InterfaceScript : MonoBehaviour {
     public PlayerBehaviour player;
     public GameObject heartFullPrefab, heartHalfPrefab, heartEmptyPrefab;
     public float heartDistance;
+    private int currentMaxHearts;
     public GameObject[] hearts;
-    private double maxHearts, curHearts;
+    private int maxHearts, curHearts;
     public Vector2 heartStartLoc;
     [SerializeField] private TextMeshProUGUI coinText;
     [SerializeField] private TextMeshProUGUI enemyRemainingText;
 
     // Start is called before the first frame update
     void Start() {
-        //set max hearts at the beginning of the game based on player health
-        maxHearts = player.health_max / 2.0;
-        curHearts = maxHearts - 1;  //set heart counter to the end of the hearts array
-        hearts = new GameObject[(int)maxHearts];        //create array of hearts and call instantiate method
+        AdjustMaximumHearts();
         InstantiateHearts();
         
     }
 
     // Update is called once per frame
     void Update() {
-
+        if (currentMaxHearts != maxHearts) {
+            AdjustMaximumHearts();
+        }
+        //finish ***************
     }
     public void UpdateEnemiesRemaining(int numEnemies) {
         enemyRemainingText.SetText("Remaining " + numEnemies);
@@ -57,13 +58,34 @@ public class InterfaceScript : MonoBehaviour {
     }
     //change the max maximum number of hearts and reinstantiate them all
     public void AdjustMaximumHearts() {
-        maxHearts = player.health_max / 2.0;
+        currentMaxHearts = maxHearts;
+        maxHearts = player.health_max / 2;
         curHearts = maxHearts - 1;
         hearts = new GameObject[(int)maxHearts];
         InstantiateHearts();
     }
-    //add a half heart if possible
     public void AddHalfHeart() {
+        if (curHearts >= hearts.Length - 1)
+            return;
+        GameObject currentHeart = hearts[curHearts];
+        if (currentHeart.CompareTag(HEART_EMPTY_TAG)) {
+            hearts[curHearts] = Instantiate(heartHalfPrefab, currentHeart.transform.position, Quaternion.identity);
+            hearts[(int)curHearts].transform.SetParent(GameObject.FindWithTag("MainCamera").transform);
+        }
+        else {
+            hearts[curHearts] = Instantiate(heartFullPrefab, currentHeart.transform.position, Quaternion.identity);
+            hearts[(int)curHearts].transform.SetParent(GameObject.FindWithTag("MainCamera").transform);
+            if (curHearts < hearts.Length - 1)
+                curHearts++;
+        }
+        Destroy(currentHeart);
+
+    }
+    
+    //add a half heart if possible
+  //  public void AddHalfHeart() {
+
+        /*
         GameObject currentHeart = hearts[(int)curHearts];
         if (curHearts >= hearts.Length - 1 && currentHeart.CompareTag(HEART_FULL_TAG))
             return;
@@ -80,10 +102,10 @@ public class InterfaceScript : MonoBehaviour {
             hearts[(int)curHearts].transform.SetParent(GameObject.FindWithTag("MainCamera").transform);
         }
         //destroy the old heart
-        Destroy(currentHeart);
-    }
+        Destroy(currentHeart);*/
+   // }
     //remove half a heart 
-    public void RemoveHeartHalf() {
+    /*public void RemoveHeartHalf() {
         if (curHearts < 0)
             return;
         GameObject currentHeart = hearts[(int)curHearts];
@@ -100,7 +122,7 @@ public class InterfaceScript : MonoBehaviour {
 
         }
         Destroy(currentHeart);
-    }
+    }*/
     /*remove a full heart, slightly more efficient than removing the half heart twice
     public void RemoveFullHeart() {
         if (curHearts < 0)

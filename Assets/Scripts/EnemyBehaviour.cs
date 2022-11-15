@@ -8,9 +8,9 @@ public class EnemyBehaviour : MonoBehaviour {
     private Rigidbody2D rb;
     private Animator animator;
     private GameObject player;
-    private Stack<Item> drops;  //stack for item drops when enemy dies
-    private int numItemsDropped; //number of items the enemy drops on death
-    private float itemSpawnRange;   //distance for spawning items in a circle around the enemy location
+    private Stack<Item> drops;                      //stack for item drops when enemy dies
+    private int numItemsDropped;                    //number of items the enemy drops on death
+    private float itemSpawnRange;                   //distance for spawning items in a circle around the enemy location
     private float wanderDirectionChangeCounter;     //counter to time duration of wander direction
     private const int DAMAGE_ON_COLLISION = 1;      //amount of damage inflected on the player when running into them baseline
                                                     //1 = 1/2 a heart
@@ -22,10 +22,10 @@ public class EnemyBehaviour : MonoBehaviour {
     [SerializeField] protected float aggroRange;                //the range the enmy must get to before starting to move toward the player
     [SerializeField] protected float Health;
     public enum State {         //state for storing the current enemy actions
-        Attacking,  //actively attempting to attack the player
-        Aggroed,    //the player is in range to move towards
-        Dormant,    //do nothing
-        Wandering   //move around in a random direction and change very X seconds
+        Attacking,              //actively attempting to attack the player
+        Aggroed,                //the player is in range to move towards
+        Dormant,                //do nothing
+        Wandering               //move around in a random direction and change very X seconds
     }
     protected State state;
 
@@ -116,8 +116,6 @@ public class EnemyBehaviour : MonoBehaviour {
         if (GetVectorToPlayer().magnitude <= aggroRange)
             state = State.Aggroed;
     }
-    //called to damage the player when the enemy collides with them
-
     //implemented per enemy type
     public virtual void AttackPlayer() {}
     //sets velocity to move towards player at the passed in value of movement speed
