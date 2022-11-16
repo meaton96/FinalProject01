@@ -16,13 +16,14 @@ public class PlayerBehaviour : MonoBehaviour {
 
     public enum Damage { Half, Full }                                   //enum to represent a full heart damage or half heart damage event
     //string constants for player animations
-    private const string END_GAME_SCENE = "End Game";                   
+    private const string END_GAME_SCENE = "End Game";
     private const string ANIM_ATTACK_TAG = "Attack";
     private const string ANIM_SHOOT_TAG = "RangedAttack";
     private const string ANIM_ROLL_TAG = "Roll";
     private const string ANIM_DEATH_TAG = "Death";
     private const string ANIM_CELEBRATE_TAG = "Celebrate";
     private const string ANIM_SPEED_TAG = "Speed";
+    private const string BORDER_ROCK_TAG = "BorderRocks";
 
     //enum representing if the player is rolling or not
     private enum State { Normal, Roll }
@@ -40,6 +41,7 @@ public class PlayerBehaviour : MonoBehaviour {
     private int numCoins { get; set; }              //numnber of coins the player has
     Rigidbody2D rb;
     Animator animator;
+    private bool godMode = false;
 
     private void Start() {
         rb = GetComponent<Rigidbody2D>();
@@ -82,6 +84,9 @@ public class PlayerBehaviour : MonoBehaviour {
         if (Input.GetKey(KeyCode.D)) {
             moveX = 1f;
         }
+        if (Input.GetKeyDown(KeyCode.G))
+            godMode = !godMode;
+
         Vector2 movement = speed * Time.deltaTime * new Vector2(moveX, moveY);
 
         //flip the sprite when changing directions
@@ -102,17 +107,26 @@ public class PlayerBehaviour : MonoBehaviour {
     //start the player roll
     //set the state and set rollDir vector 
     private void StartRoll() {
-        state = State.Roll;
-        if (rb.velocity.magnitude < .05f) {
-            rollDir = Vector2.right;
+
+        Vector2 rollDirTemp;
+        if (rb.velocity.magnitude == 0) {     //player isnt moving so roll the direction theyre facing
+            rollDirTemp = Vector2.right;
         }
         else {
             if (facingRight)
-                rollDir = rb.velocity.normalized;
+                rollDirTemp = rb.velocity.normalized;
             else
-                rollDir = rb.velocity.normalized * -1;
+                rollDirTemp = rb.velocity.normalized * -1;
         }
-        rollSpeedCounter = rollSpeed;   //reset the rollspeed counter to the roll speed
+        if (!CanRoll(rollDirTemp).collider.gameObject.CompareTag(BORDER_ROCK_TAG)) {
+            state = State.Roll;
+            rollDir = rollDirTemp;
+            rollSpeedCounter = rollSpeed;   //reset the rollspeed counter to the roll speed
+        }
+
+    }
+    private RaycastHit2D CanRoll(Vector2 rollDirection) {
+        return Physics2D.Raycast(transform.position, rollDirection);
     }
     //update player position and adjust the roll counter over time to tell when its time to stop the roll animation
     private void HandleRoll() {
@@ -132,7 +146,7 @@ public class PlayerBehaviour : MonoBehaviour {
             animator.SetTrigger(ANIM_ATTACK_TAG);
         }
         //else if (Input.GetMouseButtonDown(1)) {
-            //animator.SetTrigger(ANIM_SHOOT_TAG);
+        //animator.SetTrigger(ANIM_SHOOT_TAG);
         //}
         else if (Input.GetKeyDown(KeyCode.Space)) {
             animator.SetTrigger(ANIM_ROLL_TAG);
@@ -140,28 +154,7 @@ public class PlayerBehaviour : MonoBehaviour {
         }
 
     }
-    //Not Yet Implemented shooting arrow method
-    private void ShootArrow() {
-        Vector3 playerPos = transform.position;
-        Vector3 mousePos = Input.mousePosition;
-
-        Stack<GameObject> arrows = new();
-        for (int x = 0; x < numArrowsFired; x++) {
-            //figure out arrows
-        }
-        //figure out arrow direction =/
-        Quaternion q = new Quaternion();
-        Vector3 a = Vector3.Cross(playerPos, mousePos);
-        q.Set(a.x, a.y, a.z,
-            Mathf.Sqrt(
-                (Mathf.Pow(playerPos.magnitude, 2) *
-                 Mathf.Pow(Input.mousePosition.magnitude, 2))) +
-                 Vector3.Dot(playerPos, mousePos));
-
-        arrows.Push(Instantiate(arrowGameObject, playerPos, q));
-        arrows.Pop().gameObject.GetComponent<ArrowBehaviour>().SetDirection((playerPos - mousePos).normalized, 0);
-
-    }
+    
 
     void FlipSprite() {
         transform.Rotate(0, 180, 0);
@@ -175,11 +168,14 @@ public class PlayerBehaviour : MonoBehaviour {
     }
     //damage the player health by either one half or one full heart
     public void DamagePlayerHealth(int damageDone) {
-        health_current -= damageDone;
+        if (!godMode) {
+            health_current -= damageDone;
+            return;
+        }
         if (health_current <= 0)
             PlayerDeath();
         else {
-            interfaceScript.AdjustHeartMultipleTimes(interfaceScript.RemoveHeartHalf, damageDone);
+            //interfaceScript.AdjustHeartMultipleTimes(interfaceScript.RemoveHalfHeart, damageDone);
         }
     }
 
@@ -196,17 +192,17 @@ public class PlayerBehaviour : MonoBehaviour {
                     health_current = health_max;
                 //adjust the health interface by adding half hearts the number of times the heal amount is
                 interfaceScript.AdjustHeartMultipleTimes(interfaceScript.AddHalfHeart, healthAmount);
-                
+
             }
             else if (collision.gameObject.GetComponent<CoinBehaviour>() != null) {
                 //the item was a coin so add to the coin tracker and update the interface
-                numCoins += ((CoinBehaviour) collision.gameObject.GetComponent<CoinBehaviour>().PickUp()).Value;
+                numCoins += ((CoinBehaviour)collision.gameObject.GetComponent<CoinBehaviour>().PickUp()).Value;
                 interfaceScript.UpdateCoinText(numCoins);
             }
             else
                 //item was not coin or heart so pick it up and add it to the backpack (NYI)
                 backpack.Add(collision.gameObject.GetComponent<Item>().PickUp());   //might be null??
-            
+
         }
     }
 

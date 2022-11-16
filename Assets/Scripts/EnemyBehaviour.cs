@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
@@ -30,30 +31,38 @@ public class EnemyBehaviour : MonoBehaviour {
     protected State state;
 
 
-          
-
-
     // Start is called before the first frame update
     protected virtual void Start() {
+        Init();
+
+    }
+    public void Init() {
         wanderSpeedMultiplier = .5f;                    //default wandering speed is 1/2 regular movement speed
         wanderDirectionChangeTime = 10f;                //set change direction time to 10 seconds
         numItemsDropped = Random.Range(1, 5);           //random number of drops 1-5 to be replaced by different number per enemy 
         itemSpawnRange = .2f;                           //radius of item spawn circle
-        wanderDirectionChangeCounter = 0;               
+        wanderDirectionChangeCounter = 0;
         Rb = GetComponent<Rigidbody2D>();
         GetAnimator = GetComponent<Animator>();
         Player = GameObject.FindWithTag("Player");
         state = State.Wandering;                        //set default state
+        
         MakeDrops();
-        SetCollisionIgnores();
-
+     //   SetCollisionIgnores();
     }
     //ignore collisions with items
     protected void SetCollisionIgnores() {
-        GameObject itemObject = GameObject.FindWithTag("Item");
-        if (itemObject != null)
-            Physics2D.IgnoreCollision(gameObject.GetComponent<Collider2D>(),
-                GameObject.FindWithTag("Item").GetComponent<Collider2D>());
+        GameObject[] itemObject = GameObject.FindGameObjectsWithTag("Item");
+        //if (GetComponent<Collider2D>() != null && itemObject != null  && itemObject.GetComponent<Collider2D>() != null)
+
+      //  Debug.Log(itemObject.Length);
+      //  Debug.Log(itemObject[0].GetComponent<Collider2D>() == null);
+      //  Debug.Log(GetComponent<Collider2D>() == null);
+
+        for (int x = 0; x < itemObject.Length; x++) {
+            Physics2D.IgnoreCollision(GetComponent<Collider2D>(),
+                itemObject[x].GetComponent<Collider2D>());
+        }
     }
     //create and populate the stack of drops
     //randomly assigns a coin or heart currently
@@ -150,9 +159,9 @@ public class EnemyBehaviour : MonoBehaviour {
     private void Die() {
         while (drops.TryPop(out Item i)) {
             float theta = Random.Range(0, 2 * Mathf.PI);
-            Vector2 dropPos = new(transform.position.x + itemSpawnRange * Mathf.Cos(theta),
+            Vector2 dropDir = new(transform.position.x + itemSpawnRange * Mathf.Cos(theta),
                 transform.position.y + itemSpawnRange * Mathf.Sin(theta));
-            i.Drop(dropPos);
+            i.Drop(transform.position, dropDir);
         }
         Destroy(gameObject);
     }

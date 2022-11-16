@@ -19,9 +19,17 @@ public abstract class Item : MonoBehaviour
         
     }
     //Instantiate the item at the given location to "drop" from an enemy or chest 
-    public virtual Item Drop(Vector2 dropLocation) {
-        Instantiate(preFab, dropLocation, Quaternion.identity);
+    public virtual Item Drop(Vector2 dropLocation, Vector2 dropDirection) {
+        GameObject item = Instantiate(preFab, dropLocation, Quaternion.identity);
+        item.GetComponent<Rigidbody2D>().AddForce(dropDirection - dropLocation);
         gameObject.SetActive(true);
+
+        GameObject[] enemies = GameObject.FindWithTag("GameControl").GetComponent<GameController>().GetEnemies();
+
+        for (int x = 0; x < enemies.Length; x++) {
+            if (enemies[x] != null)
+                Physics2D.IgnoreCollision(GetComponent<Collider2D>(), enemies[x].GetComponent<Collider2D>());
+        }
         return this;
     }
     //Player picks up the item so destroy it and return

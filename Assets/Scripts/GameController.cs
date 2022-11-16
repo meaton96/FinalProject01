@@ -21,6 +21,7 @@ public class GameController : MonoBehaviour {
     private Vector2 borderStartLocation;                                        //vector to start drawing the border rocks
     private int numBorderRocksX, numBorderRocksY;                               //number of border rocks for each direction
     private GameObject[] currentEnemies;                                        //array of enemies currently spawned in the level
+    private const int NUMBER_OF_ENEMIES_TO_SPAWN = 5;
 
     // Start is called before the first frame update
     void Start() {
@@ -34,11 +35,12 @@ public class GameController : MonoBehaviour {
         if (currentEnemies == null || AllAreNull(currentEnemies)) {
             //SceneManager.LoadScene(2);
             //Debug.Log("Load new scene");
-            SpawnEnemyWave(15);
+            SpawnEnemyWave(NUMBER_OF_ENEMIES_TO_SPAWN);
         }
         else {
             if (playerObject != null)
-                playerObject.GetComponent<PlayerBehaviour>().interfaceScript.UpdateEnemiesRemaining(NumEnemiesLeft(currentEnemies));
+                playerObject.GetComponent<PlayerBehaviour>().interfaceScript.
+                    UpdateEnemiesRemaining(NumEnemiesLeft(currentEnemies));
         }
     }
     private bool AllAreNull(GameObject[] enemies) {
@@ -59,14 +61,17 @@ public class GameController : MonoBehaviour {
         }
         return numEnemies;
     }
+    public GameObject[] GetEnemies() { return currentEnemies; }
 
     private void SpawnEnemyWave(int numEnemies) {
-        //constraints not right ********************************************************
+        
         float leftConstraint, topConstraint, rightConstraint, bottomConstraint;
-        leftConstraint = backgroundStartingLocation.x + LARGE_ROCK_SIZE * 3;   
-        topConstraint = backgroundStartingLocation.y - LARGE_ROCK_SIZE * 3;
-        rightConstraint = leftConstraint + LARGE_ROCK_SIZE * numBorderRocksX - LARGE_ROCK_SIZE;
-        bottomConstraint = topConstraint - LARGE_ROCK_SIZE * numBorderRocksY + LARGE_ROCK_SIZE;
+        leftConstraint = borderStartLocation.x + LARGE_ROCK_SIZE * 2 / 3;   
+        topConstraint = borderStartLocation.y - LARGE_ROCK_SIZE * 2 / 3;
+        rightConstraint = leftConstraint + LARGE_ROCK_SIZE * numBorderRocksX - LARGE_ROCK_SIZE * 2.5f;
+        bottomConstraint = topConstraint - LARGE_ROCK_SIZE * numBorderRocksY + LARGE_ROCK_SIZE * 2.5f;
+
+
 
         currentEnemies = new GameObject[numEnemies];
         for (int i = 0; i < numEnemies; i++) {
@@ -77,6 +82,7 @@ public class GameController : MonoBehaviour {
                 new Vector3(Random.Range(leftConstraint, rightConstraint),
                             Random.Range(bottomConstraint,topConstraint), 0f),
                             Quaternion.identity);
+            //currentEnemies[i].GetComponent<EnemyBehaviour>().Init();
             
         }
     }

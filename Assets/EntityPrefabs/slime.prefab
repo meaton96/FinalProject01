@@ -120,6 +120,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 403e19433674c124f9897ac2a536c632, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  wanderSpeedMultiplier: 0
+  wanderDirectionChangeTime: 0
+  movementSpeed: 0
+  attackRange: 0
+  aggroRange: 0
+  Health: 0
 --- !u!50 &8372192109328763572
 Rigidbody2D:
   serializedVersion: 4
@@ -140,7 +146,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!58 &8836661055417030380
 CircleCollider2D:
   m_ObjectHideFlags: 0
