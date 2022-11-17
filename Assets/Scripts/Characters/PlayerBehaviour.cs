@@ -211,9 +211,6 @@ public class PlayerBehaviour : MonoBehaviour {
                 backpack.Add(collision.gameObject.GetComponent<Item>().PickUp());   //might be null??
 
         }
-        else if (collision.gameObject.CompareTag("Projectile_Enemy")) {
-
-        }
     }
 
 }

@@ -44,11 +44,14 @@ public class MagicianBehaviour : EnemyBehaviour
         Debug.Log("Shooting");
         GameObject ball = Instantiate(GameObject.FindWithTag("GameControl")
             .GetComponent<GameController>().MagicianBallPreFab, transform.position, Quaternion.identity);
+        Physics2D.IgnoreCollision(GetComponent<Collider2D>(), ball.GetComponent<Collider2D>());
         Projectile projScript = ball.GetComponent<Projectile>();
+        //projScript.SetCollisionIgnores();
+        //Debug.Log(projScript.gameObject.transform.position);    
         //Vector3 playerPos = GameObject.FindWithTag("Player").transform.position;
         projScript.SetDirection(GetVectorToPlayer().normalized);
         projScript.SetSpeed(projectileSpeed);
-        projScript.SetCollisionIgnores();
+        
         projScript.Damage = projectileDamage;
     }
 

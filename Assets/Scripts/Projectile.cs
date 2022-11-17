@@ -12,7 +12,7 @@ public class Projectile : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        SetCollisionIgnores();
     }
 
     // Update is called once per frame
@@ -39,10 +39,12 @@ public class Projectile : MonoBehaviour
         //Debug.Log($"Velocity");
     }
     private void OnCollisionEnter2D(Collision2D collision) {
-      /*  Destroy(gameObject);
+        //Debug.Log($"Collided with {collision.gameObject.name}");
+        if (!collision.gameObject.CompareTag("Enemy"))
+            Destroy(gameObject);
         if (collision.gameObject.CompareTag("Player")) {
             collision.gameObject.GetComponent<PlayerBehaviour>().DamagePlayerHealth(damage);
-        }*/
+        }
     }
     public void SetDirection(Vector2 dir) { direction = dir; }
     public void SetSpeed(float speed) { this.speed = speed; }
