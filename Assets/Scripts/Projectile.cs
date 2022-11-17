@@ -7,6 +7,8 @@ public class Projectile : MonoBehaviour
     private Vector2 direction;
     private float speed;
     private int damage;
+    private float time = 1;
+    private float timer = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -21,16 +23,26 @@ public class Projectile : MonoBehaviour
             
     }
     private void FixedUpdate() {
-       // Vector3 lerpPosition = Vector3.Lerp(transform.position, direction, speed * Time.deltaTime);
-       // transform.position = lerpPosition;
+        // Vector3 lerpPosition = Vector3.Lerp(transform.position, direction, speed * Time.deltaTime);
+        // transform.position = lerpPosition;
 
         transform.Translate(direction.normalized * (speed * Time.deltaTime));
+        if (timer > time) {
+            timer = 0;
+            LogInfo();
+        }
+        else
+            timer += Time.deltaTime;
+    }
+    private void LogInfo() {
+        Debug.Log($"Pos: ({transform.position.x},{transform.position.y})");
+        //Debug.Log($"Velocity");
     }
     private void OnCollisionEnter2D(Collision2D collision) {
-        Destroy(gameObject);
+      /*  Destroy(gameObject);
         if (collision.gameObject.CompareTag("Player")) {
             collision.gameObject.GetComponent<PlayerBehaviour>().DamagePlayerHealth(damage);
-        }
+        }*/
     }
     public void SetDirection(Vector2 dir) { direction = dir; }
     public void SetSpeed(float speed) { this.speed = speed; }

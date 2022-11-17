@@ -179,7 +179,7 @@ public class PlayerBehaviour : MonoBehaviour {
             return;
         }
         health_current -= damageDone;
-        Debug.Log($"health: +{health_current}");
+        
         if (health_current <= 0)
             PlayerDeath();
         else {
@@ -188,7 +188,7 @@ public class PlayerBehaviour : MonoBehaviour {
     }
 
     private void OnCollisionEnter2D(Collision2D collision) {
-        if (collision.gameObject.CompareTag("Item")) {                                                  //player collided with an item
+        if (collision.gameObject.CompareTag("Item")) {                            //player collided with an item
             if (collision.gameObject.GetComponent<HeartBehaviour>() != null) {
                 health_current++;
                 //tell the heart object that it was picked up
@@ -197,7 +197,7 @@ public class PlayerBehaviour : MonoBehaviour {
                 if (health_current > health_max)
                     health_current = health_max;
                 //some weird bug here
-                Debug.Log($"health: +{health_current}");
+               // Debug.Log($"health: +{health_current}");
                 interfaceScript.AddHalfHeart();
 
             }
@@ -209,6 +209,9 @@ public class PlayerBehaviour : MonoBehaviour {
             else
                 //item was not coin or heart so pick it up and add it to the backpack (NYI)
                 backpack.Add(collision.gameObject.GetComponent<Item>().PickUp());   //might be null??
+
+        }
+        else if (collision.gameObject.CompareTag("Projectile_Enemy")) {
 
         }
     }

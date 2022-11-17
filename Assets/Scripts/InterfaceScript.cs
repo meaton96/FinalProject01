@@ -11,14 +11,14 @@ public class InterfaceScript : MonoBehaviour {
     private const string HEART_EMPTY_TAG = "Interface_HeartEmpty";
     public delegate void AdjustHeart();
 
-    public PlayerBehaviour player;
-    public GameObject heartFullPrefab, heartHalfPrefab, heartEmptyPrefab;
-    public float heartDistance;
-    public GameObject[] hearts;
-    private int maxHearts, curHeart;
-    public Vector2 heartStartLoc;
-    [SerializeField] private TextMeshProUGUI coinText;
-    [SerializeField] private TextMeshProUGUI enemyRemainingText;
+    public PlayerBehaviour player;                                              //player pointer
+    public GameObject heartFullPrefab, heartHalfPrefab, heartEmptyPrefab;       //prefab objects for drawing the health hearts
+    public float heartDistance;                                                 //distance between heart objects on UI
+    public GameObject[] hearts;                                                 //array of currently drawn heart objects
+    private int maxHearts, curHeart;                                            //the maximum number of heart and current heart index
+    public Vector2 heartStartLoc;                                               //place on the screen to begin drawing the hearts
+    [SerializeField] private TextMeshProUGUI coinText;                          //coin text object to display number of coins
+    [SerializeField] private TextMeshProUGUI enemyRemainingText;                //text to display number of enemies left
 
     // Start is called before the first frame update
     void Start() {
@@ -35,6 +35,7 @@ public class InterfaceScript : MonoBehaviour {
     //create, instantiate, and fill the heart array with full hearts, also attack it to the main camera 
     private void InstantiateHearts() {
         for (int x = 0; x < maxHearts; x++) {
+            //fill the heart array with full heart objects
             hearts[x] = Instantiate(heartFullPrefab,
                 new Vector3(heartStartLoc.x + (x * heartDistance), heartStartLoc.y, 0),
                 Quaternion.identity);

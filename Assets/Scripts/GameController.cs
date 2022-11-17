@@ -28,6 +28,7 @@ public class GameController : MonoBehaviour {
         CreateBackground();
         //SpawnEnemyWave(5);
         CreateOuterBarrier();
+        
     }
 
     // Update is called once per frame
@@ -64,9 +65,9 @@ public class GameController : MonoBehaviour {
     public GameObject[] GetEnemies() { return currentEnemies; }
 
     private void SpawnEnemyWave(int numEnemies) {
-        
+
         float leftConstraint, topConstraint, rightConstraint, bottomConstraint;
-        leftConstraint = borderStartLocation.x + LARGE_ROCK_SIZE * 2 / 3;   
+        leftConstraint = borderStartLocation.x + LARGE_ROCK_SIZE * 2 / 3;
         topConstraint = borderStartLocation.y - LARGE_ROCK_SIZE * 2 / 3;
         rightConstraint = leftConstraint + LARGE_ROCK_SIZE * numBorderRocksX - LARGE_ROCK_SIZE * 2.5f;
         bottomConstraint = topConstraint - LARGE_ROCK_SIZE * numBorderRocksY + LARGE_ROCK_SIZE * 2.5f;
@@ -80,10 +81,10 @@ public class GameController : MonoBehaviour {
             //Debug.Log($"({Random.Range(leftConstraint, rightConstraint)},{Random.Range(bottomConstraint, topConstraint)})");
             currentEnemies[i] = Instantiate(preFabList[index],
                 new Vector3(Random.Range(leftConstraint, rightConstraint),
-                            Random.Range(bottomConstraint,topConstraint), 0f),
+                            Random.Range(bottomConstraint, topConstraint), 0f),
                             Quaternion.identity);
             //currentEnemies[i].GetComponent<EnemyBehaviour>().Init();
-            
+
         }
     }
     //creates a grass background by tiling the randomly chosen grass squares
@@ -99,13 +100,16 @@ public class GameController : MonoBehaviour {
     }
     //creates a square border of large rocks so the player cannot leave the game world
     private void CreateOuterBarrier() {
+        //2.9 and 1.6 + the width of the rock prevents the camera from viewing the edge of the grass squares 
         borderStartLocation = new Vector2(backgroundStartingLocation.x + 2.9f, backgroundStartingLocation.y - 1.6f);
-        numBorderRocksX = (int)(backgroundCol * GRASS_SIZE / LARGE_ROCK_SIZE) - 4;
-        numBorderRocksY = (int)(backgroundRow * GRASS_SIZE / LARGE_ROCK_SIZE) - 2;
+        numBorderRocksX = (int)(backgroundCol * GRASS_SIZE / LARGE_ROCK_SIZE) - 4;  //4 is about the horizontal width of the camera from the center
+        numBorderRocksY = (int)(backgroundRow * GRASS_SIZE / LARGE_ROCK_SIZE) - 2;  //2 is about the vertical height of the camera
         for (int x = 0; x < numBorderRocksX; x++) {
             for (int y = 0; y < numBorderRocksY; y++) {
                 if (x == 0 || x == numBorderRocksX - 1 || y == 0 || y == numBorderRocksY - 1) {
-                    Instantiate(largeRockObjects[Random.Range(0, 1)], new Vector2(borderStartLocation.x + x * LARGE_ROCK_SIZE, borderStartLocation.y - y * LARGE_ROCK_SIZE), Quaternion.identity);
+                    Instantiate(largeRockObjects[Random.Range(0, 1)],   //choose one of the 2 rock options
+                        new Vector2(borderStartLocation.x + x * LARGE_ROCK_SIZE, borderStartLocation.y - y * LARGE_ROCK_SIZE), 
+                        Quaternion.identity);
                 }
             }
         }
