@@ -86,6 +86,13 @@ public class PlayerBehaviour : MonoBehaviour {
         }
         if (Input.GetKeyDown(KeyCode.G))
             godMode = !godMode;
+       /* if (Input.GetKeyDown(KeyCode.Q)) {
+            interfaceScript.RemoveHalfHeart();
+
+        }
+        if (Input.GetKeyDown(KeyCode.E)) {
+            interfaceScript.AddHalfHeart();
+        }*/
 
         Vector2 movement = speed * Time.deltaTime * new Vector2(moveX, moveY);
 
@@ -168,30 +175,30 @@ public class PlayerBehaviour : MonoBehaviour {
     }
     //damage the player health by either one half or one full heart
     public void DamagePlayerHealth(int damageDone) {
-        if (!godMode) {
-            health_current -= damageDone;
+        if (godMode) {
             return;
         }
+        health_current -= damageDone;
+        Debug.Log($"health: +{health_current}");
         if (health_current <= 0)
             PlayerDeath();
         else {
-            //interfaceScript.AdjustHeartMultipleTimes(interfaceScript.RemoveHalfHeart, damageDone);
+            interfaceScript.AdjustHeartMultipleTimes(interfaceScript.RemoveHalfHeart, damageDone);
         }
     }
 
     private void OnCollisionEnter2D(Collision2D collision) {
         if (collision.gameObject.CompareTag("Item")) {                                                  //player collided with an item
             if (collision.gameObject.GetComponent<HeartBehaviour>() != null) {
-                //item is a heart so heal the player based on the amount the heart heals
-                int healthAmount = (int)collision.gameObject.GetComponent<HeartBehaviour>().HealAmount;
-                health_current += healthAmount;
+                health_current++;
                 //tell the heart object that it was picked up
                 collision.gameObject.GetComponent<HeartBehaviour>().PickUp();
                 //make sure that the health can't go above maximum
                 if (health_current > health_max)
                     health_current = health_max;
-                //adjust the health interface by adding half hearts the number of times the heal amount is
-                interfaceScript.AdjustHeartMultipleTimes(interfaceScript.AddHalfHeart, healthAmount);
+                //some weird bug here
+                Debug.Log($"health: +{health_current}");
+                interfaceScript.AddHalfHeart();
 
             }
             else if (collision.gameObject.GetComponent<CoinBehaviour>() != null) {

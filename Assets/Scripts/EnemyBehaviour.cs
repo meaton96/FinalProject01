@@ -145,6 +145,9 @@ public class EnemyBehaviour : MonoBehaviour {
             //collided with player
             player.GetComponent<PlayerBehaviour>().DamagePlayerHealth(DAMAGE_ON_COLLISION);
         }
+        else if(collision.gameObject.CompareTag("Item")) {
+            drops.Push(collision.gameObject.GetComponent<Item>().PickUp());
+        }
 
     }
     //damage the enemy, dies if its health goes below 0

@@ -14,10 +14,8 @@ public class InterfaceScript : MonoBehaviour {
     public PlayerBehaviour player;
     public GameObject heartFullPrefab, heartHalfPrefab, heartEmptyPrefab;
     public float heartDistance;
-    private int currentMaxHearts;
-    private int playerHealthCurrent;
     public GameObject[] hearts;
-    private int maxHearts, curHearts;
+    private int maxHearts, curHeart;
     public Vector2 heartStartLoc;
     [SerializeField] private TextMeshProUGUI coinText;
     [SerializeField] private TextMeshProUGUI enemyRemainingText;
@@ -25,7 +23,6 @@ public class InterfaceScript : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
         AdjustMaximumHearts();
-        playerHealthCurrent = player.health_current;
     }
 
     // Update is called once per frame
@@ -56,39 +53,46 @@ public class InterfaceScript : MonoBehaviour {
     }
     //change the max maximum number of hearts and reinstantiate them all
     public void AdjustMaximumHearts() {
-        currentMaxHearts = maxHearts;
         maxHearts = player.health_max / 2;
-        curHearts = maxHearts - 1;
+        curHeart = maxHearts - 1;
         hearts = new GameObject[(int)maxHearts];
         InstantiateHearts();
     }
     public void AddHalfHeart() {
-        if (curHearts >= hearts.Length - 1)
+        //if hearts are all full do nothing
+        if (curHeart == maxHearts - 1 && hearts[curHeart].CompareTag(HEART_FULL_TAG))
             return;
-        GameObject currentHeart = hearts[curHearts];
+        //grab reference to current heart
+        GameObject currentHeart = hearts[curHeart];
+        //if it is an empty heart make it a half full heart
         if (currentHeart.CompareTag(HEART_EMPTY_TAG)) {
-            hearts[curHearts] = Instantiate(heartHalfPrefab, currentHeart.transform.position, Quaternion.identity);
-            hearts[(int)curHearts].transform.SetParent(GameObject.FindWithTag("MainCamera").transform);
+            hearts[curHeart] = Instantiate(heartHalfPrefab, currentHeart.transform.position, Quaternion.identity);
+            hearts[curHeart].transform.SetParent(GameObject.FindWithTag("MainCamera").transform);
         }
         else {
-            hearts[curHearts] = Instantiate(heartFullPrefab, currentHeart.transform.position, Quaternion.identity);
-            hearts[(int)curHearts].transform.SetParent(GameObject.FindWithTag("MainCamera").transform);
-            if (curHearts < hearts.Length - 1)
-                curHearts++;
+            //otherwise make it a full heart
+            hearts[curHeart] = Instantiate(heartFullPrefab, currentHeart.transform.position, Quaternion.identity);
+            hearts[curHeart].transform.SetParent(GameObject.FindWithTag("MainCamera").transform);
+            //if current heart counter isnt at the end of the hearts array then increment
+            if (curHeart != maxHearts - 1)
+                curHeart++;
         }
-        Destroy(currentHeart);
+        Destroy(currentHeart);  //destroy the previous heart
     }
     public void RemoveHalfHeart() {
-        GameObject currentHeart = hearts[curHearts];
+        //grab reference to the current heart
+        GameObject currentHeart = hearts[curHeart];
         if (currentHeart.CompareTag(HEART_FULL_TAG)) {
-            hearts[curHearts] = Instantiate(heartHalfPrefab, currentHeart.transform.position, Quaternion.identity);
-            hearts[(int)curHearts].transform.SetParent(GameObject.FindWithTag("MainCamera").transform);
+            //replace it with a half heart if it was full
+            hearts[curHeart] = Instantiate(heartHalfPrefab, currentHeart.transform.position, Quaternion.identity);
+            hearts[curHeart].transform.SetParent(GameObject.FindWithTag("MainCamera").transform);
         }
         else {
-            hearts[curHearts] = Instantiate(heartEmptyPrefab, currentHeart.transform.position, Quaternion.identity);
-            hearts[(int)curHearts].transform.SetParent(GameObject.FindWithTag("MainCamera").transform);
-            if (curHearts != 0)
-                curHearts--;
+            //otherwise replace it with an empty heart
+            hearts[curHeart] = Instantiate(heartEmptyPrefab, currentHeart.transform.position, Quaternion.identity);
+            hearts[curHeart].transform.SetParent(GameObject.FindWithTag("MainCamera").transform);
+            if (curHeart != 0)
+                curHeart--;
         }
         Destroy(currentHeart);
     }

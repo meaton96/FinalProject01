@@ -29,6 +29,8 @@ public class MagicianBehaviour : EnemyBehaviour
         base.Start();
     }
     public override void AttackPlayer() {
+        if (GetVectorToPlayer().magnitude > attackRange)
+            state = State.Aggroed;
         if (AttackDelayCounter >= 0) {
             AttackDelayCounter -= Time.deltaTime;
         }
@@ -39,12 +41,11 @@ public class MagicianBehaviour : EnemyBehaviour
         
     }
     public void Shoot() {
-        if (GetVectorToPlayer().magnitude >= attackRange)
-            state = State.Aggroed;
+        Debug.Log("Shooting");
         GameObject ball = Instantiate(GameObject.FindWithTag("GameControl")
             .GetComponent<GameController>().MagicianBallPreFab, transform.position, Quaternion.identity);
         Projectile projScript = ball.GetComponent<Projectile>();
-        Vector3 playerPos = GameObject.FindWithTag("Player").transform.position;
+        //Vector3 playerPos = GameObject.FindWithTag("Player").transform.position;
         projScript.SetDirection(GetVectorToPlayer().normalized);
         projScript.SetSpeed(projectileSpeed);
         projScript.SetCollisionIgnores();

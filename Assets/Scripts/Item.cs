@@ -34,7 +34,8 @@ public abstract class Item : MonoBehaviour
     }
     //Player picks up the item so destroy it and return
     public virtual Item PickUp() {
-        Destroy(gameObject);
+        //Destroy(gameObject);
+        gameObject.SetActive(false);
         return this;
     }
     
