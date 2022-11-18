@@ -44,7 +44,8 @@ public class GameController : MonoBehaviour {
                     UpdateEnemiesRemaining(NumEnemiesLeft(currentEnemies));
         }
     }
-    private bool AllAreNull(GameObject[] enemies) {
+    //returns true if each of the objects in the array are null
+    private bool AllAreNull<T>(T[] enemies) {
         for (int x = 0; x < enemies.Length; x++) {
             if (enemies[x] != null) {
                 return false;
@@ -52,10 +53,9 @@ public class GameController : MonoBehaviour {
         }
         return true;
     }
+    //
     private int NumEnemiesLeft(GameObject[] enemies) {
         int numEnemies = 0;
-        if (AllAreNull(enemies))
-            return 0;
         for (int x = 0; x < enemies.Length; x++) {
             if (enemies[x] != null)
                 numEnemies++;
