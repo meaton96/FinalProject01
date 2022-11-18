@@ -1,16 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour {
     public GameObject CoinPreFab;                                               //coin object for drawing on UI
     public GameObject HeartItemPreFab;                                          //heart object for drawing on UI
     public GameObject MagicianBallPreFab;                                       //magician projectile 
-    [SerializeField] GameObject[] preFabList = new GameObject[2];
+    [SerializeField] GameObject[] preFabList = new GameObject[2];               //list of all enemy prefabs in order to randomly choose which type of enemy to spawn
     [SerializeField] GameObject[] grassObjects = new GameObject[5];             //grass objects for drawing background
     [SerializeField] GameObject[] largeRockObjects = new GameObject[2];         //large rocks for creating the border 
     [SerializeField] Vector2 backgroundStartingLocation;                        //vector location for where to start drawing the background
@@ -41,7 +35,7 @@ public class GameController : MonoBehaviour {
         else {
             if (playerObject != null)
                 playerObject.GetComponent<PlayerBehaviour>().interfaceScript.
-                    UpdateEnemiesRemaining(NumEnemiesLeft(currentEnemies));
+                    UpdateEnemiesRemaining(NumEnemiesLeft(currentEnemies));     //update the number of enemies if the player isnt dead
         }
     }
     //returns true if each of the objects in the array are null
@@ -53,7 +47,7 @@ public class GameController : MonoBehaviour {
         }
         return true;
     }
-    //
+    //returns the amount of enemies left in the enemy array
     private int NumEnemiesLeft(GameObject[] enemies) {
         int numEnemies = 0;
         for (int x = 0; x < enemies.Length; x++) {
@@ -64,9 +58,13 @@ public class GameController : MonoBehaviour {
     }
     public GameObject[] GetEnemies() { return currentEnemies; }
 
+    /// <summary>
+    /// Spawns a wave of enemies
+    /// </summary>
+    /// <param name="numEnemies">the number of enemies to spawn on that wave</param>
     private void SpawnEnemyWave(int numEnemies) {
 
-        float leftConstraint, topConstraint, rightConstraint, bottomConstraint;
+        float leftConstraint, topConstraint, rightConstraint, bottomConstraint;                             //constraints for where to spawn the enemies 
         leftConstraint = borderStartLocation.x + LARGE_ROCK_SIZE * 2 / 3;
         topConstraint = borderStartLocation.y - LARGE_ROCK_SIZE * 2 / 3;
         rightConstraint = leftConstraint + LARGE_ROCK_SIZE * numBorderRocksX - LARGE_ROCK_SIZE * 2.5f;
@@ -74,17 +72,15 @@ public class GameController : MonoBehaviour {
 
 
 
-        currentEnemies = new GameObject[numEnemies];
+        currentEnemies = new GameObject[numEnemies];                            //create a new array to store the spawned enemies 
         for (int i = 0; i < numEnemies; i++) {
             int index = Random.Range(0, preFabList.Length);
 
-            //Debug.Log($"({Random.Range(leftConstraint, rightConstraint)},{Random.Range(bottomConstraint, topConstraint)})");
+            //Instantiate an enemy and store it in the enemies array
             currentEnemies[i] = Instantiate(preFabList[index],
                 new Vector3(Random.Range(leftConstraint, rightConstraint),
                             Random.Range(bottomConstraint, topConstraint), 0f),
                             Quaternion.identity);
-            //currentEnemies[i].GetComponent<EnemyBehaviour>().Init();
-
         }
     }
     //creates a grass background by tiling the randomly chosen grass squares
