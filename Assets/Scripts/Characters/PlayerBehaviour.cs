@@ -197,6 +197,9 @@ public class PlayerBehaviour : MonoBehaviour {
                 if (health_current > health_max)
                     health_current = health_max;
                 //some weird bug here
+                //sometimes health gets off by 1/2 of a heart, player health is calculated correctly but
+                //healing player is 1/2 a heart behind actual player health
+                //???????
                // Debug.Log($"health: +{health_current}");
                 interfaceScript.AddHalfHeart();
 
