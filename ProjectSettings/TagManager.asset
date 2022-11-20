@@ -13,14 +13,16 @@ TagManager:
   - GameControl
   - Scenery
   - BorderRocks
+  - StoreWeaponButton
+  - StoreExitButton
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Scenery
   - Water
   - UI
-  - 
+  - Entities
   - 
   - 
   - 

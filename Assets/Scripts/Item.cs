@@ -7,7 +7,7 @@ public abstract class Item : MonoBehaviour
     // Start is called before the first frame update
     [SerializeField] protected GameObject preFab;       //item model
     [SerializeField] private float weight;
-    [SerializeField] private float cost;
+
     void Start()
     {
         

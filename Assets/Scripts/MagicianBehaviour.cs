@@ -41,7 +41,6 @@ public class MagicianBehaviour : EnemyBehaviour
         
     }
     public void Shoot() {
-        Debug.Log("Shooting");
         GameObject ball = Instantiate(GameObject.FindWithTag("GameControl")
             .GetComponent<GameController>().MagicianBallPreFab, transform.position, Quaternion.identity);
         Physics2D.IgnoreCollision(GetComponent<Collider2D>(), ball.GetComponent<Collider2D>());

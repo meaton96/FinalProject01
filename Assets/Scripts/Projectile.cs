@@ -29,7 +29,7 @@ public class Projectile : MonoBehaviour
         transform.Translate(direction.normalized * (speed * Time.deltaTime));
         if (timer > time) {
             timer = 0;
-            LogInfo();
+            //  LogInfo();
         }
         else
             timer += Time.deltaTime;

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8386776941678252573}
   - component: {fileID: 8386776941678252574}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: MagicianHitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   - component: {fileID: 8386776942587130021}
   - component: {fileID: 8386776942587130020}
   - component: {fileID: 1892368130785633519}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: 0_Magician_Idle_000
   m_TagString: Enemy
   m_Icon: {fileID: 0}

@@ -38,6 +38,7 @@ public class PlayerBehaviour : MonoBehaviour {
     public int melee_damage;                        //amount of damage that the player does when using melee weapon (unused)
     public int ranged_damage;                       //amount of damage the player does when firing a ranged weapon (unused)
     public GameObject arrowGameObject;              //reference to arrow prefab
+    private const float ROLL_DISTANCE = 1.5f;
     private int numCoins { get; set; }              //numnber of coins the player has
     Rigidbody2D rb;
     Animator animator;
@@ -86,13 +87,13 @@ public class PlayerBehaviour : MonoBehaviour {
         }
         if (Input.GetKeyDown(KeyCode.G))
             godMode = !godMode;
-       /* if (Input.GetKeyDown(KeyCode.Q)) {
-            interfaceScript.RemoveHalfHeart();
+        /* if (Input.GetKeyDown(KeyCode.Q)) {
+             interfaceScript.RemoveHalfHeart();
 
-        }
-        if (Input.GetKeyDown(KeyCode.E)) {
-            interfaceScript.AddHalfHeart();
-        }*/
+         }
+         if (Input.GetKeyDown(KeyCode.E)) {
+             interfaceScript.AddHalfHeart();
+         }*/
 
         Vector2 movement = speed * Time.deltaTime * new Vector2(moveX, moveY);
 
@@ -125,15 +126,33 @@ public class PlayerBehaviour : MonoBehaviour {
             else
                 rollDirTemp = rb.velocity.normalized * -1;
         }
-        if (!CanRoll(rollDirTemp).collider.gameObject.CompareTag(BORDER_ROCK_TAG)) {
+        if (rollDirTemp == null)
+            return;
+        if (CanRoll(rollDirTemp)) {
             state = State.Roll;
             rollDir = rollDirTemp;
             rollSpeedCounter = rollSpeed;   //reset the rollspeed counter to the roll speed
         }
 
+
     }
-    private RaycastHit2D CanRoll(Vector2 rollDirection) {
-        return Physics2D.Raycast(transform.position, rollDirection);
+    public void EquipWeapon(GameObject weapon) {
+        numCoins -= weapon.GetComponent<Weapon>().cost;
+    }
+    private void IgnoreDefaultLayerCollisions() {
+        Debug.Log("Ignoring layer collisions");
+        Physics2D.IgnoreLayerCollision(0, 6);
+    }
+    private void StopIgnoringDefaultLayerCollisions() {
+        Debug.Log("Stop ignoring");
+        Physics2D.IgnoreLayerCollision(0, 6, false);
+    }
+    private bool CanRoll(Vector2 rollDirection) {
+        if (!facingRight)
+            rollDirection = rollDirection * -1;
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, rollDirection, ROLL_DISTANCE);
+
+        return hit.collider == null || !hit.collider.gameObject.CompareTag(BORDER_ROCK_TAG);
     }
     //update player position and adjust the roll counter over time to tell when its time to stop the roll animation
     private void HandleRoll() {
