@@ -1,3 +1,4 @@
+using Pathfinding;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,9 +19,9 @@ public class EnemyBehaviour : MonoBehaviour {
     [SerializeField] private float wanderSpeedMultiplier;       //how slower/faster the enemy moves while wandering vs aggroed
     [SerializeField] private float wanderDirectionChangeTime;   //the time set during the wandering movement before changing directions
                                                                 //in seconds
-    [SerializeField] protected float movementSpeed;             //the base movement speed of the enemy
-    [SerializeField] protected float attackRange;               //the range the enemy must get to before attacking the player
-    [SerializeField] protected float aggroRange;                //the range the enmy must get to before starting to move toward the player
+    protected float movementSpeed;             //the base movement speed of the enemy
+    protected float attackRange;               //the range the enemy must get to before attacking the player
+    protected float aggroRange;                //the range the enmy must get to before starting to move toward the player
     [SerializeField] protected float Health;
 
     private const float WANDER_TIME = 10f;
@@ -41,33 +42,21 @@ public class EnemyBehaviour : MonoBehaviour {
 
     }
     public void Init() {
+        Player = GameObject.FindWithTag("Player");
+        GetComponent<AIDestinationSetter>().target = Player.transform;
         wanderSpeedMultiplier = .5f;                    //default wandering speed is 1/2 regular movement speed
         wanderDirectionChangeTime = 10f;                //set change direction time to 10 seconds
         numItemsDropped = Random.Range(1, 5);           //random number of drops 1-5 to be replaced by different number per enemy 
         itemSpawnRange = .2f;                           //radius of item spawn circle
         wanderDirectionChangeCounter = 0;
         Rb = GetComponent<Rigidbody2D>();
-        GetAnimator = GetComponent<Animator>();
-        Player = GameObject.FindWithTag("Player");
+        animator = GetComponent<Animator>();
         state = State.Wandering;                        //set default state
-        
+        GetComponent<AIPath>().canMove = false;
         MakeDrops();
      //   SetCollisionIgnores();
     }
-    //ignore collisions with items
-    protected void SetCollisionIgnores() {
-        GameObject[] itemObject = GameObject.FindGameObjectsWithTag("Item");
-        //if (GetComponent<Collider2D>() != null && itemObject != null  && itemObject.GetComponent<Collider2D>() != null)
 
-      //  Debug.Log(itemObject.Length);
-      //  Debug.Log(itemObject[0].GetComponent<Collider2D>() == null);
-      //  Debug.Log(GetComponent<Collider2D>() == null);
-
-        for (int x = 0; x < itemObject.Length; x++) {
-            Physics2D.IgnoreCollision(GetComponent<Collider2D>(),
-                itemObject[x].GetComponent<Collider2D>());
-        }
-    }
     //create and populate the stack of drops
     //randomly assigns a coin or heart currently
     protected void MakeDrops() {
@@ -89,6 +78,8 @@ public class EnemyBehaviour : MonoBehaviour {
 
     // Update is called once per frame
     protected virtual void Update() {
+        if (rb != null)
+            
         switch (state) {
             case State.Wandering:
                 Wander();
@@ -99,9 +90,13 @@ public class EnemyBehaviour : MonoBehaviour {
                 AttackPlayer();
                 break;
             case State.Aggroed:
-                MoveToPlayer();
+              //  MoveToPlayer();
+                break;
+            case State.Searching:
+                Search();
                 break;
         }
+       //S Debug.Log(state.ToString()); 
     }
     private void MoveToPlayer() {
         //just sets the velocity maybe add an attack animation later
@@ -118,8 +113,10 @@ public class EnemyBehaviour : MonoBehaviour {
     //change direction randomly every X seconds, swap to aggroed if in range
     private void Wander() {
         //check if the enemy has been wandering to long and begin searching for the player
-        if (wanderTimer >= WANDER_TIME)
+        if (wanderTimer >= WANDER_TIME) {
             state = State.Searching;
+            return;
+        }
         else
             wanderTimer += Time.deltaTime;
 
@@ -132,14 +129,19 @@ public class EnemyBehaviour : MonoBehaviour {
         }
         else
             wanderDirectionChangeCounter -= Time.deltaTime;
-
+        
         //set state to aggro if enemy gets close enough to player
-        if (GetVectorToPlayer().magnitude <= aggroRange)
-            state = State.Aggroed;
+   //     if (GetVectorToPlayer().magnitude <= aggroRange)
+       //     state = State.Aggroed;
 
 
     }
     private void Search() {
+        GetComponent<AIPath>().canMove = true;
+        if (GetVectorToPlayer().magnitude <= attackRange) {
+            GetComponent<AIPath>().canMove = false;
+            state = State.Attacking;
+        }
 
     }
     //implemented per enemy type

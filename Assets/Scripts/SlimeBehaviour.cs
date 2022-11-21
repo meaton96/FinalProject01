@@ -9,7 +9,7 @@ public class SlimeBehaviour : EnemyBehaviour
     protected override void Start() {
         movementSpeed = .5f;
         attackRange = .2f;
-        aggroRange = 2f;
+        aggroRange = 1f;
         base.Start();
     }
 

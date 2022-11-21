@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEditor.FilePathAttribute;
 
 public class GameController : MonoBehaviour {
     public GameObject CoinPreFab;                                               //coin object for drawing on UI
@@ -47,7 +45,7 @@ public class GameController : MonoBehaviour {
             Debug.Log("Round over");
             //SceneManager.LoadScene(2);
             //Debug.Log("Load new scene");
-           // SpawnEnemies();
+            //SpawnEnemies();
         }
         else {
             //spawn an enemy from each spawner every SPAWN_TIME seconds
@@ -61,8 +59,11 @@ public class GameController : MonoBehaviour {
 
                 playerObject.GetComponent<PlayerBehaviour>().interfaceScript.
                     UpdateEnemiesRemaining(NumEnemiesLeft(currentEnemies));     //update the number of enemies if the player isnt dead
+                playerObject.GetComponent<PlayerBehaviour>().interfaceScript
+                    .UpdateSpawnerText(GetNumSpawnersActive());                 //update the text for number of spawners active
+
             }
-            }
+        }
         }
     private bool NoSpawnersLeft() {
         for (int x = 0; x < chests.Length; x++) {
@@ -76,6 +77,15 @@ public class GameController : MonoBehaviour {
             chests[x].GetComponent<ChestBehaviour>().Init(CHEST_NUM_ITEMS_DROPPED);
         }
 
+    }
+    public int GetNumSpawnersActive() {
+        int count = 0;
+        for (int x = 0; x < chests.Length; x++) {
+            if (chests[x].GetComponent<ChestBehaviour>().CanSpawnEnemy()) {
+                count++;
+            }
+        }
+        return count;
     }
     private void SpawnEnemies() {
         /*currentEnemies = new GameObject[NUMBER_OF_ENEMIES_TO_SPAWN];

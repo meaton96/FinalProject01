@@ -19,6 +19,7 @@ public class InterfaceScript : MonoBehaviour {
     public Vector2 heartStartLoc;                                               //place on the screen to begin drawing the hearts
     [SerializeField] private TextMeshProUGUI coinText;                          //coin text object to display number of coins
     [SerializeField] private TextMeshProUGUI enemyRemainingText;                //text to display number of enemies left
+    [SerializeField] private TextMeshProUGUI spawnersReaminingText;
 
     // Start is called before the first frame update
     void Start() {
@@ -100,6 +101,9 @@ public class InterfaceScript : MonoBehaviour {
     //update coin text by pulling amount of coins from player
     public void UpdateCoinText(int numCoins) {
         coinText.text = numCoins.ToString();
+    }
+    public void UpdateSpawnerText(int numSpawners) {
+        spawnersReaminingText.text = "Spawners: " + numSpawners;
     }
 
 

@@ -59,3 +59,6 @@ TagManager:
   - name: Trees/Bushes
     uniqueID: 2208149399
     locked: 0
+  - name: UI
+    uniqueID: 1146718379
+    locked: 0
