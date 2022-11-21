@@ -15,6 +15,7 @@ TagManager:
   - BorderRocks
   - StoreWeaponButton
   - StoreExitButton
+  - Chest
   layers:
   - Default
   - TransparentFX
@@ -23,7 +24,7 @@ TagManager:
   - Water
   - UI
   - Entities
-  - 
+  - DroppedItems
   - 
   - 
   - 
@@ -54,4 +55,7 @@ TagManager:
     locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Trees/Bushes
+    uniqueID: 2208149399
     locked: 0

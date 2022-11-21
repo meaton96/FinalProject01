@@ -22,11 +22,15 @@ public class EnemyBehaviour : MonoBehaviour {
     [SerializeField] protected float attackRange;               //the range the enemy must get to before attacking the player
     [SerializeField] protected float aggroRange;                //the range the enmy must get to before starting to move toward the player
     [SerializeField] protected float Health;
+
+    private const float WANDER_TIME = 10f;
+    private float wanderTimer = 0;
     public enum State {         //state for storing the current enemy actions
         Attacking,              //actively attempting to attack the player
         Aggroed,                //the player is in range to move towards
         Dormant,                //do nothing
-        Wandering               //move around in a random direction and change very X seconds
+        Wandering,               //move around in a random direction and change very X seconds
+        Searching
     }
     protected State state;
 
@@ -113,6 +117,13 @@ public class EnemyBehaviour : MonoBehaviour {
     }
     //change direction randomly every X seconds, swap to aggroed if in range
     private void Wander() {
+        //check if the enemy has been wandering to long and begin searching for the player
+        if (wanderTimer >= WANDER_TIME)
+            state = State.Searching;
+        else
+            wanderTimer += Time.deltaTime;
+
+        //change the wander direction every few seconds to a random direction
         if (wanderDirectionChangeCounter <= 1) {
             float angle = Random.Range(0, 2 * Mathf.PI);
             SetVelocity(movementSpeed * wanderSpeedMultiplier,
@@ -122,8 +133,14 @@ public class EnemyBehaviour : MonoBehaviour {
         else
             wanderDirectionChangeCounter -= Time.deltaTime;
 
+        //set state to aggro if enemy gets close enough to player
         if (GetVectorToPlayer().magnitude <= aggroRange)
             state = State.Aggroed;
+
+
+    }
+    private void Search() {
+
     }
     //implemented per enemy type
     public virtual void AttackPlayer() {}

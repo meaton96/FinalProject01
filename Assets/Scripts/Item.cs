@@ -23,13 +23,6 @@ public abstract class Item : MonoBehaviour
         GameObject item = Instantiate(preFab, dropLocation, Quaternion.identity);
         item.GetComponent<Rigidbody2D>().AddForce(dropDirection - dropLocation);
         gameObject.SetActive(true);
-
-        GameObject[] enemies = GameObject.FindWithTag("GameControl").GetComponent<GameController>().GetEnemies();
-
-        for (int x = 0; x < enemies.Length; x++) {
-            if (enemies[x] != null)
-                Physics2D.IgnoreCollision(GetComponent<Collider2D>(), enemies[x].GetComponent<Collider2D>());
-        }
         return this;
     }
     //Player picks up the item so destroy it and return
