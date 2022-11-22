@@ -87,6 +87,9 @@ public class PlayerBehaviour : MonoBehaviour {
         }
         if (Input.GetKeyDown(KeyCode.G))
             godMode = !godMode;
+        if (Input.GetKeyDown(KeyCode.L)) {
+            SceneManager.LoadScene(2, LoadSceneMode.Single);
+        }
         /* if (Input.GetKeyDown(KeyCode.Q)) {
              interfaceScript.RemoveHalfHeart();
 

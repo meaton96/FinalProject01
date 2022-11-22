@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/End Game.unity
     guid: 899cfcd460d9dd94a92cc45eca166f45
+  - enabled: 1
+    path: Assets/Scenes/TalentTreeScene.unity
+    guid: c822a1df87a828c47ad4a6d1f3a3fb89
   m_configObjects: {}

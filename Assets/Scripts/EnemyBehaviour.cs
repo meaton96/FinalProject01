@@ -6,7 +6,7 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
-public class EnemyBehaviour : MonoBehaviour {
+public abstract class EnemyBehaviour : MonoBehaviour {
     private Rigidbody2D rb;
     private Animator animator;
     private GameObject player;
