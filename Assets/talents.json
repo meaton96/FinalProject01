@@ -1,12 +1,12 @@
 {
 	"Heart 1": {
 		"description": "Increase maximum hearts by 1",
-		"id": "1",
+		"id": "2",
 		"cost": "50"
 	},
 	"Heart 2": {
 		"description": "Increase maximum hearts by 1",
-		"id": "2",
+		"id": "1",
 		"cost": "5"
 	},
 	"Heart 3": 

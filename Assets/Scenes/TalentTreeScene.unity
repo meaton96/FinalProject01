@@ -449,6 +449,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 82337cdef46a1934f816b1539b5d81da, type: 3}
   - {fileID: 21300000, guid: b3f7e63e549355442bc38c359423d338, type: 3}
   talentObjectPreFab: {fileID: 6710813894546819266, guid: 9fd113af7e8d8ff48a06de32e066115d, type: 3}
+  leftBracket: {fileID: 2245701540161841193, guid: ddef0310567efe74f90bc48a0ee17ad7, type: 3}
+  rightBracket: {fileID: 3852416934883569766, guid: a4d5ce9072b37a74d80bcec383bd2e96, type: 3}
 --- !u!4 &581683932
 Transform:
   m_ObjectHideFlags: 0

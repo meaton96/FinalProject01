@@ -9,12 +9,18 @@ public class TalentTreeBehaviour : MonoBehaviour {
     private const int HEART_SPRITE_INDEX = 15;
     [SerializeField] private GameObject talentObjectPreFab;
     private const string TALENT_FILE_PATH = "Assets\\talents.json";
-    private readonly Vector2 talentTreeHeadLocation = new(0f, -4f);
+    public static Vector2 ROOT_NODE_LOCATION = new(0f, -4f);
 
+    [SerializeField] private GameObject leftBracket, rightBracket;
 
+    public const float BRACKET_OFFSET_Y = 1.2f;
+    public const float BRACKET_OFFSET_X = 1.6f;
 
-    Vector2[] locations = new Vector2[20];
+    public const float OFFSET_Y = 2.4f;
+    public const float OFFSET_X = 3;
 
+    public const float START_X = 0;
+    public const float START_Y = -4;
 
     BinaryTree talentTree;
     // Start is called before the first frame update
@@ -26,10 +32,6 @@ public class TalentTreeBehaviour : MonoBehaviour {
                 json += sr.ReadLine();
             }
 
-            // string line = "";
-            ////  while ((line = sr.ReadLine()) != "}") {
-            //      json += line;
-            //  }
             json = json[1..];
             json.Trim('}');
             string[] talents = json.Split("}");
@@ -37,10 +39,13 @@ public class TalentTreeBehaviour : MonoBehaviour {
                 //Debug.Log(talents[x]);
                 ParseJsonLine(talents[x]);
             }
-
         }
+
         talentTree.ActivateAllNodes(talentTree.Root);
-        Debug.Log(talentTree.Root.Data.ToString());
+        talentTree.SetNodeTransforms(talentTree.Root, OFFSET_X, OFFSET_Y, BRACKET_OFFSET_X,
+            BRACKET_OFFSET_Y, leftBracket, rightBracket);
+
+        //Debug.Log(talentTree.Root.Data.ToString());
     }
 
     // Update is called once per frame
@@ -48,7 +53,13 @@ public class TalentTreeBehaviour : MonoBehaviour {
 
     }
     void HandleMouseClick() {
+        if (Input.GetMouseButtonDown(0)) {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Physics.Raycast(ray, out RaycastHit hit);
+            if (hit.collider == null) {
 
+            }
+        }
     }
     //takes a line of json data and turns it into a talent node
     void ParseJsonLine(string json) {
@@ -61,10 +72,10 @@ public class TalentTreeBehaviour : MonoBehaviour {
         string name, description;
         int id;
 
-
-
-
         name = json.Substring(2, json.IndexOf('{') - 5);
+        name = name.Replace('\"', '\u2009');
+
+
         json = json.Remove(0, name.Length + 5);
 
         string[] jsonLines = json.Split(",");
@@ -81,7 +92,7 @@ public class TalentTreeBehaviour : MonoBehaviour {
         id = int.Parse(variables[1]);
         cost = int.Parse(variables[2][..variables[2].IndexOf('\"')]);       //trim off the last quotation because trim didnt work???
 
-        GameObject temp = Instantiate(talentObjectPreFab, talentTreeHeadLocation, Quaternion.identity);
+        GameObject temp = Instantiate(talentObjectPreFab, ROOT_NODE_LOCATION, Quaternion.identity);
         temp.GetComponent<Talent>().Init(name, description, cost, id);
         temp.SetActive(false);
         temp.transform.parent = transform;
@@ -90,7 +101,7 @@ public class TalentTreeBehaviour : MonoBehaviour {
         // Debug.Log(name + "\n" + description + "\n" + id + "\n" + cost);
 
         // Debug.Log(temp.GetComponent<Talent>().name);
-        if (name.StartsWith("Heart")) {
+        if (name.Contains("Heart")) {
             temp.GetComponent<Talent>().SetSprite(talentButtonSprites[HEART_SPRITE_INDEX]);
         }
         else
@@ -98,20 +109,21 @@ public class TalentTreeBehaviour : MonoBehaviour {
 
         if (talentTree == null) {
             talentTree = new BinaryTree(temp);
-            temp.transform.position = new Vector2(Talent.START_X, Talent.START_Y);
+            //temp.transform.position = new Vector2(Talent.START_X, Talent.START_Y);
         }
         else {
             talentTree.Add(temp, talentTree.Root);
-            Node<GameObject> node = talentTree.Find(talentTree.Root, temp);
-            //null reference
-            //this is horrible
-            //using a tree for this is the worst thing ever
-            if (temp.GetComponent<Talent>() < node.Parent.Data.GetComponent<Talent>()) 
-                temp.transform.position = new Vector2(node.Parent.Data.transform.position.x - Talent.OFFSET_X,
-                    node.Parent.Data.transform.position.y + Talent.OFFSET_Y);
-            else
-                temp.transform.position = new Vector2(node.Parent.Data.transform.position.x + Talent.OFFSET_X,
-                    node.Parent.Data.transform.position.y + Talent.OFFSET_Y);
+            /* Node<GameObject> node = talentTree.Find(talentTree.Root, temp);
+             //null reference
+             //this is horrible
+             //using a tree for this is the worst thing ever
+             if (temp.GetComponent<Talent>() < node.Parent.Data.GetComponent<Talent>()) 
+                 temp.transform.position = new Vector2(node.Parent.Data.transform.position.x - Talent.OFFSET_X,
+                     node.Parent.Data.transform.position.y + Talent.OFFSET_Y);
+             else
+                 temp.transform.position = new Vector2(node.Parent.Data.transform.position.x + Talent.OFFSET_X,
+                     node.Parent.Data.transform.position.y + Talent.OFFSET_Y);
+            */
 
         }
 

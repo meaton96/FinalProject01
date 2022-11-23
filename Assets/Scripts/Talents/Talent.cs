@@ -7,14 +7,7 @@ using UnityEngine;
 public class Talent : MonoBehaviour, IComparable<Talent>
 {
 
-    public const float BRACKET_OFFSET_Y = 1.2f;
-    public const float BRACKET_OFFSET_X = 1.6f;
-
-    public const float OFFSET_Y = 2.4f;
-    public const float OFFSET_X = 3;
-
-    public const float START_X = 0;
-    public const float START_Y = -4;
+    
 
     //  new string name;
     string description;                                             
@@ -22,7 +15,7 @@ public class Talent : MonoBehaviour, IComparable<Talent>
   //  int cost;
     private TextMeshProUGUI nameText, descriptionText, costText;    
     private SpriteRenderer sr;
-    [SerializeField] private GameObject leftBracket, rightBracket;
+    
 
     
 

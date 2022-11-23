@@ -62,6 +62,43 @@ internal class BinaryTree {
         InOrderPrint(root.Right);
     }
 
+    /// <summary>
+    /// recursively iterate through all nodes in the tree and sets their children's transforms
+    /// </summary>
+    /// <param name="root">root node of the binary tree</param>
+    /// <param name="offsetX">X offset from the current node to draw the child at</param>
+    /// <param name="offsetY">Y offset from the current node</param>
+    /// <param name="bracketOffsetX">X offset to draw the bracket at</param>
+    /// <param name="bracketOffsetY">Y offset to draw the bracket at</param>
+    /// <param name="leftBracketPreFab">left bracket game object </param>
+    /// <param name="rightBracketPreFab">right bracket game object</param>
+    public void SetNodeTransforms(Node<GameObject> root, float offsetX, float offsetY,
+        float bracketOffsetX, float bracketOffsetY, GameObject leftBracketPreFab, GameObject rightBracketPreFab) {
+        if (root == null)
+            return;
+        Vector2 pos = root.Data.transform.position;
+        if (root.Left != null) {                                        //check left child
+            MonoBehaviour.Instantiate(leftBracketPreFab, new Vector2(
+                pos.x - bracketOffsetX,
+                pos.y + bracketOffsetY),
+                Quaternion.identity);
+            root.Left.Data.transform.position = new Vector2(pos.x - offsetX, pos.y + offsetY);
+            SetNodeTransforms(root.Left, offsetX, offsetY, bracketOffsetX, bracketOffsetY, leftBracketPreFab, rightBracketPreFab);
+        }
+        if (root.Right != null) {                                       //check right child
+            MonoBehaviour.Instantiate(rightBracketPreFab, new Vector2(
+                pos.x + bracketOffsetX,
+                pos.y + bracketOffsetY),
+                Quaternion.identity);
+            root.Right.Data.transform.position = new Vector2(pos.x + offsetX, pos.y + offsetY);
+            SetNodeTransforms(root.Right, offsetX, offsetY, bracketOffsetX, bracketOffsetY, leftBracketPreFab, rightBracketPreFab);
+        }
+
+    }
+    /// <summary>
+    /// sets the status of all game objects in the nodes to active
+    /// </summary>
+    /// <param name="root">the root node of the binary search tree</param>
     public void ActivateAllNodes(Node<GameObject> root) {
 
         if (root == null) {
@@ -76,6 +113,12 @@ internal class BinaryTree {
 
     }
 
+    /// <summary>
+    /// finds and returns the node containing the given game object instance
+    /// </summary>
+    /// <param name="root">the root node of the binary tree</param>
+    /// <param name="gameObject">the game object to search for</param>
+    /// <returns>the node containing the game object instance</returns>
     public Node<GameObject> Find(Node<GameObject> root, GameObject gameObject) {
 
         if (root == null)
@@ -137,8 +180,9 @@ internal class BinaryTree {
     /// <param name="root">the root node</param>
     /// <param name="list">the list to populate, by reference</param>
     public void ToList(Node<GameObject> root, List<GameObject> list) {
-        if (root == null)
+        if (root == null) {
             return;
+        }
         ToList(root.Left, list);
         list.Add(root.Data);
         ToList(root.Right, list);
