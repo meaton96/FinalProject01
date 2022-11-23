@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -38,11 +39,12 @@ public class PlayerBehaviour : MonoBehaviour {
     public int melee_damage;                        //amount of damage that the player does when using melee weapon (unused)
     public int ranged_damage;                       //amount of damage the player does when firing a ranged weapon (unused)
     public GameObject arrowGameObject;              //reference to arrow prefab
-    private const float ROLL_DISTANCE = 1.5f;
+    private const float ROLL_DISTANCE = 1.5f;       //the base distance the player can roll
     private int numCoins { get; set; }              //numnber of coins the player has
     Rigidbody2D rb;
     Animator animator;
-    private bool godMode = false;
+    private bool godMode = false;                   //cheat mode, invlunerable to damage
+    public List<int> purchasedTalents = new();      //contains a list of all purchased talents by keeping track of their Ids
 
     public static PlayerBehaviour Instance;
 
@@ -53,6 +55,7 @@ public class PlayerBehaviour : MonoBehaviour {
         state = State.Normal;
 
     }
+    //preserve the player when swapping to a new scene
     private void Awake() {
         if (Instance != null) {
             Destroy(gameObject);
@@ -99,7 +102,7 @@ public class PlayerBehaviour : MonoBehaviour {
             godMode = !godMode;
         if (Input.GetKeyDown(KeyCode.L)) {
             GameObject.FindWithTag("GameControl").GetComponent<GameController>().Pause();
-            SceneManager.LoadScene(2, LoadSceneMode.Single);
+           // SceneManager.LoadScene(2, LoadSceneMode.Single);
         }
         /* if (Input.GetKeyDown(KeyCode.Q)) {
              interfaceScript.RemoveHalfHeart();
@@ -126,6 +129,8 @@ public class PlayerBehaviour : MonoBehaviour {
         else
             animator.SetFloat(ANIM_SPEED_TAG, 0);
     }
+
+    public int NumCoins() {  return numCoins; } 
     //start the player roll
     //set the state and set rollDir vector 
     private void StartRoll() {
@@ -149,6 +154,9 @@ public class PlayerBehaviour : MonoBehaviour {
         }
 
 
+    }
+    public void RemoveCoins(int numCoinsSpent) {
+        numCoins -= numCoinsSpent;
     }
     public void EquipWeapon(GameObject weapon) {
         numCoins -= weapon.GetComponent<Weapon>().cost;
@@ -249,4 +257,14 @@ public class PlayerBehaviour : MonoBehaviour {
         }
     }
 
+    public void ApplyTalent(int effectId, int talentId) {
+        switch(effectId) {
+            case 000001:
+                health_max += 2;
+                health_current = health_max;
+                interfaceScript.AdjustMaximumHearts();
+                purchasedTalents.Add(talentId);
+                break;
+        }
+    }
 }

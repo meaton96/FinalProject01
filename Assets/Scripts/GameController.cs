@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 public class GameController : MonoBehaviour {
     public GameObject CoinPreFab;                                               //coin object for drawing on UI
@@ -21,6 +22,8 @@ public class GameController : MonoBehaviour {
     private float spawnTimer = 0;                                               //timer to track enemy spawns
     [SerializeField] private const float SPAWN_TIME = 10;                       //seconds of time between enemy spawns
     [SerializeField] private int CHEST_NUM_ITEMS_DROPPED = 5;                   //number of items dropped by the chests when theyre opened
+    [SerializeField] private GameObject talentController, talentBackground;
+
 
     public static GameController Instance;
 
@@ -38,6 +41,7 @@ public class GameController : MonoBehaviour {
         currentEnemies = new();
         InitChests();
         SpawnEnemies();
+        talentController.GetComponent<TalentTreeBehaviour>().ParseTalentJson();
     }
     private void Awake() {
         if (Instance != null) {
@@ -189,9 +193,27 @@ public class GameController : MonoBehaviour {
     private bool SpawnLocationNotEmpty(Vector2 location) {
         return Physics2D.Raycast(location, new Vector2(.1f, 0), 0.1f);
     }
-
+    /// <summary>
+    /// handle pausing and unpausing the game loading the talent menu for now
+    /// </summary>
     public void Pause() {
-        isPaused = !isPaused;
+        if (Time.timeScale == 1) {
+            Time.timeScale = 0;
+            talentBackground.SetActive(true);
+            talentController.SetActive(true);
+            isPaused = true;
+            Camera.main.orthographicSize = 5;
+            talentController.GetComponent<TalentTreeBehaviour>().
+                SetCoinText(playerObject.GetComponent<PlayerBehaviour>().NumCoins());
+        }
+        else {
+            isPaused = false;
+            Time.timeScale = 1;
+            talentBackground.SetActive(false);
+            talentController.SetActive(false);
+            Camera.main.orthographicSize = 2;
+        }
+
     }
 
 

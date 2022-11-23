@@ -1,15 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class TalentTreeBehaviour : MonoBehaviour {
     [SerializeField] private Sprite[] talentButtonSprites = new Sprite[16];
     private const int HEART_SPRITE_INDEX = 15;
     [SerializeField] private GameObject talentObjectPreFab;
-    private const string TALENT_FILE_PATH = "Assets\\talents.json";
+    private const string TALENT_FILE_PATH = "Assets\\TalentMenu\\talents.json";
     public static Vector2 ROOT_NODE_LOCATION = new(0f, -4f);
+    [SerializeField] private TextMeshProUGUI coinText;
 
     [SerializeField] private GameObject leftBracket, rightBracket;
 
@@ -29,37 +32,33 @@ public class TalentTreeBehaviour : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
 
-
-        ParseTalentJson();
+        //ParseTalentJson();
         talentTree.ActivateAllNodes(talentTree.Root);
         talentTree.SetNodeTransforms(talentTree.Root, OFFSET_X, OFFSET_Y, BRACKET_OFFSET_X,
             BRACKET_OFFSET_Y, leftBracket, rightBracket, gameObject);
 
+        coinText.text = GameObject.FindWithTag("Player").GetComponent<PlayerBehaviour>().NumCoins() + "";
         //Debug.Log(talentTree.Root.Data.ToString());
     }
 
-    // Update is called once per frame
-    void Update() {
-
-    }
     void OnMouseDown() {
         screenPoint = Camera.main.WorldToScreenPoint(gameObject.transform.position);
-
         offset = gameObject.transform.position - Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPoint.z));
 
     }
+
 
     void OnMouseDrag() {
         Vector3 curScreenPoint = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPoint.z);
 
         Vector3 curPosition = Camera.main.ScreenToWorldPoint(curScreenPoint) + offset;
-        transform.position = new Vector2(curPosition.x, curPosition.y);
+      //  transform.position = new Vector2(curPosition.x, curPosition.y);
 
     }
     /// <summary>
     /// Parses the talents.json file and uses the ParseJsonTalent to create talents 
     /// </summary>
-    void ParseTalentJson() {
+    public void ParseTalentJson() {
         string json = "";
         using (StreamReader sr = File.OpenText(TALENT_FILE_PATH)) {
             while (!sr.EndOfStream) {
@@ -74,6 +73,14 @@ public class TalentTreeBehaviour : MonoBehaviour {
             }
         }
     }
+    /// <summary>
+    /// sets the coin text to the passed in int
+    /// </summary>
+    /// <param name="money">the amount of money the player has </param>
+    public void SetCoinText(int money) {
+        coinText.text = money + "";
+    }
+
     /// <summary>
     /// Takes a section of json data and creates a Talent instance out of it and pushes it into the tree
     /// </summary>
@@ -108,7 +115,7 @@ public class TalentTreeBehaviour : MonoBehaviour {
 
         //create a new game object and instantiate it, initialize all of its fields
         GameObject temp = Instantiate(talentObjectPreFab, ROOT_NODE_LOCATION, Quaternion.identity);
-        temp.GetComponent<Talent>().Init(name, description, cost, id, effectId);
+        temp.GetComponent<Talent>().Init(name, description, cost, id, effectId, TalentHasBeenPurchased(id));
         temp.SetActive(false);                                              //deactivate it and attach it to the current transform as a parent
         temp.transform.parent = transform;
 
@@ -127,6 +134,19 @@ public class TalentTreeBehaviour : MonoBehaviour {
         else {
             talentTree.Add(temp, talentTree.Root);
         }
+    }
+    /// <summary>
+    /// checks if the talent being created has already been purchased
+    /// </summary>
+    /// <param name="id">the id to check against the list of purchased talents</param>
+    /// <returns>true if the id has been purchased and was in the list false otherwise</returns>
+    private bool TalentHasBeenPurchased(int id) {
+        PlayerBehaviour pb = GameObject.FindWithTag("Player").GetComponent<PlayerBehaviour>();
+        foreach(int talentId in pb.purchasedTalents) {
+            if (talentId == id)
+                return true;
+        }
+        return false;
     }
 
 

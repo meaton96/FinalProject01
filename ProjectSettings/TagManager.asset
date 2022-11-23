@@ -64,3 +64,9 @@ TagManager:
   - name: UI
     uniqueID: 1146718379
     locked: 0
+  - name: MenuBackground
+    uniqueID: 793139125
+    locked: 0
+  - name: Menu
+    uniqueID: 2099505215
+    locked: 0

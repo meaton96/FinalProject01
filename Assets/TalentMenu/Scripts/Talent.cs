@@ -4,22 +4,21 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class Talent : MonoBehaviour, IComparable<Talent>
-{
+public class Talent : MonoBehaviour, IComparable<Talent> {
 
-    
+
 
     //  new string name;
-    string description;                                             
+    string description;
     int id;
     int cost;
     int effectId;
-    private TextMeshProUGUI nameText, descriptionText, costText;    
+    private TextMeshProUGUI nameText, descriptionText, costText;
     private SpriteRenderer sr;
 
     [SerializeField] GameObject purchasedMarkPreFab;
-    [SerializeField] TextMeshProUGUI playerMoney;
-    
+    TextMeshProUGUI playerMoney;
+
 
     private bool HasBeenPurchased { get; set; }
 
@@ -32,13 +31,14 @@ public class Talent : MonoBehaviour, IComparable<Talent>
             int money = int.Parse(playerMoney.text);
             if (money >= cost)
                 Purchase(money - cost);
-        } 
-            
+        }
+
     }
 
     //set the text for the button and 
-    public void Init(string name, string desc, int cost, int id, int effectId) {
-      //  this.name = name;
+    public void Init(string name, string desc, int cost, int id, int effectId, bool hasBeenPurchased) {
+        
+        //  this.name = name;
         this.id = id;
         description = desc;
         this.cost = cost;
@@ -49,20 +49,27 @@ public class Talent : MonoBehaviour, IComparable<Talent>
         nameText = transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>();
         descriptionText = transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>();
         costText = transform.GetChild(0).GetChild(2).GetComponent<TextMeshProUGUI>();
-        sr = GetComponent<SpriteRenderer>();    
+        sr = GetComponent<SpriteRenderer>();
 
         nameText.SetText(name);
         descriptionText.SetText(description);
         costText.SetText(cost + "");
 
+        if (hasBeenPurchased) {
+            Purchase(int.Parse(playerMoney.text));
+
+        }
     }
     public void SetSprite(Sprite sprite) {
         sr.sprite = sprite;
     }
     public void Purchase(int moneyLeft) {
         HasBeenPurchased = true;
-        Instantiate(purchasedMarkPreFab,transform.position, Quaternion.identity).transform.parent = transform;
-        playerMoney.text = moneyLeft.ToString();    
+        Instantiate(purchasedMarkPreFab, transform.position, Quaternion.identity).transform.parent = transform;
+        playerMoney.text = moneyLeft.ToString();
+        PlayerBehaviour playerBehaviour = GameObject.FindWithTag("Player").GetComponent<PlayerBehaviour>();
+        playerBehaviour.RemoveCoins(cost);
+        playerBehaviour.ApplyTalent(effectId, id);
     }
     
     public static bool operator <(Talent a, Talent b) {
@@ -71,5 +78,6 @@ public class Talent : MonoBehaviour, IComparable<Talent>
     public static bool operator >(Talent a, Talent b) {
         return a.CompareTo(b) < 0;
     }
+    
 
 }
