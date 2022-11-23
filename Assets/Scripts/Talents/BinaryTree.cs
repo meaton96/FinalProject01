@@ -73,25 +73,27 @@ internal class BinaryTree {
     /// <param name="leftBracketPreFab">left bracket game object </param>
     /// <param name="rightBracketPreFab">right bracket game object</param>
     public void SetNodeTransforms(Node<GameObject> root, float offsetX, float offsetY,
-        float bracketOffsetX, float bracketOffsetY, GameObject leftBracketPreFab, GameObject rightBracketPreFab) {
+        float bracketOffsetX, float bracketOffsetY, GameObject leftBracketPreFab, GameObject rightBracketPreFab, GameObject parent) {
         if (root == null)
             return;
         Vector2 pos = root.Data.transform.position;
         if (root.Left != null) {                                        //check left child
-            MonoBehaviour.Instantiate(leftBracketPreFab, new Vector2(
+            GameObject temp = UnityEngine.Object.Instantiate(leftBracketPreFab, new Vector2(
                 pos.x - bracketOffsetX,
                 pos.y + bracketOffsetY),
                 Quaternion.identity);
+            temp.transform.parent = parent.transform;
             root.Left.Data.transform.position = new Vector2(pos.x - offsetX, pos.y + offsetY);
-            SetNodeTransforms(root.Left, offsetX, offsetY, bracketOffsetX, bracketOffsetY, leftBracketPreFab, rightBracketPreFab);
+            SetNodeTransforms(root.Left, offsetX, offsetY, bracketOffsetX, bracketOffsetY, leftBracketPreFab, rightBracketPreFab, parent);
         }
         if (root.Right != null) {                                       //check right child
-            MonoBehaviour.Instantiate(rightBracketPreFab, new Vector2(
+            GameObject temp = UnityEngine.Object.Instantiate(rightBracketPreFab, new Vector2(
                 pos.x + bracketOffsetX,
                 pos.y + bracketOffsetY),
                 Quaternion.identity);
+            temp.transform.parent = parent.transform;
             root.Right.Data.transform.position = new Vector2(pos.x + offsetX, pos.y + offsetY);
-            SetNodeTransforms(root.Right, offsetX, offsetY, bracketOffsetX, bracketOffsetY, leftBracketPreFab, rightBracketPreFab);
+            SetNodeTransforms(root.Right, offsetX, offsetY, bracketOffsetX, bracketOffsetY, leftBracketPreFab, rightBracketPreFab, parent);
         }
 
     }

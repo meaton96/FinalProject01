@@ -13,6 +13,9 @@ public class TalentTreeBehaviour : MonoBehaviour {
 
     [SerializeField] private GameObject leftBracket, rightBracket;
 
+    private Vector3 screenPoint;
+    private Vector3 offset;
+
     public const float BRACKET_OFFSET_Y = 1.2f;
     public const float BRACKET_OFFSET_X = 1.6f;
 
@@ -26,6 +29,37 @@ public class TalentTreeBehaviour : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
 
+
+        ParseTalentJson();
+        talentTree.ActivateAllNodes(talentTree.Root);
+        talentTree.SetNodeTransforms(talentTree.Root, OFFSET_X, OFFSET_Y, BRACKET_OFFSET_X,
+            BRACKET_OFFSET_Y, leftBracket, rightBracket, gameObject);
+
+        //Debug.Log(talentTree.Root.Data.ToString());
+    }
+
+    // Update is called once per frame
+    void Update() {
+
+    }
+    void OnMouseDown() {
+        screenPoint = Camera.main.WorldToScreenPoint(gameObject.transform.position);
+
+        offset = gameObject.transform.position - Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPoint.z));
+
+    }
+
+    void OnMouseDrag() {
+        Vector3 curScreenPoint = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPoint.z);
+
+        Vector3 curPosition = Camera.main.ScreenToWorldPoint(curScreenPoint) + offset;
+        transform.position = new Vector2(curPosition.x, curPosition.y);
+
+    }
+    /// <summary>
+    /// Parses the talents.json file and uses the ParseJsonTalent to create talents 
+    /// </summary>
+    void ParseTalentJson() {
         string json = "";
         using (StreamReader sr = File.OpenText(TALENT_FILE_PATH)) {
             while (!sr.EndOfStream) {
@@ -36,97 +70,63 @@ public class TalentTreeBehaviour : MonoBehaviour {
             json.Trim('}');
             string[] talents = json.Split("}");
             for (int x = 0; x < talents.Length; x++) {
-                //Debug.Log(talents[x]);
-                ParseJsonLine(talents[x]);
-            }
-        }
-
-        talentTree.ActivateAllNodes(talentTree.Root);
-        talentTree.SetNodeTransforms(talentTree.Root, OFFSET_X, OFFSET_Y, BRACKET_OFFSET_X,
-            BRACKET_OFFSET_Y, leftBracket, rightBracket);
-
-        //Debug.Log(talentTree.Root.Data.ToString());
-    }
-
-    // Update is called once per frame
-    void Update() {
-
-    }
-    void HandleMouseClick() {
-        if (Input.GetMouseButtonDown(0)) {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            Physics.Raycast(ray, out RaycastHit hit);
-            if (hit.collider == null) {
-
+                ParseJsonTalent(talents[x]);
             }
         }
     }
-    //takes a line of json data and turns it into a talent node
-    void ParseJsonLine(string json) {
+    /// <summary>
+    /// Takes a section of json data and creates a Talent instance out of it and pushes it into the tree
+    /// </summary>
+    /// <param name="json">The section of Json data representing a single talent</param>
+    void ParseJsonTalent(string json) {
         if (json.IndexOf('{') == -1)
             return;
 
-        //Debug.Log(json);
-
-        int cost;
+        int cost, id, effectId;
         string name, description;
-        int id;
 
-        name = json.Substring(2, json.IndexOf('{') - 5);
-        name = name.Replace('\"', '\u2009');
+        name = json.Substring(2, json.IndexOf('{') - 5);        //remove anything before the opening bracket character
+        name = name.Replace('\"', '\u2009');                    //remove the quotations from the name
 
 
-        json = json.Remove(0, name.Length + 5);
+        json = json.Remove(0, name.Length + 5);                 //remove 5 spaces after the talent name
 
-        string[] jsonLines = json.Split(",");
-        string[] variables = new string[jsonLines.Length];
-        //Debug.Log(json);
+        string[] jsonLines = json.Split(",");                   //split the json into its parts by splitting on the comma
+        string[] variables = new string[jsonLines.Length];      //create array to hold the edited parts of the json text
 
         for (int x = 0; x < jsonLines.Length; x++) {
-            variables[x] = jsonLines[x][jsonLines[x].IndexOf(':')..].Trim('\"');
-            variables[x] = variables[x][3..];
-            // Debug.Log(variables[x]);
+            variables[x] = jsonLines[x][jsonLines[x].IndexOf(':')..].Trim('\"');    //remove everything before the colon and trim off the quotation mark at the end
+            variables[x] = variables[x][3..];                                       //remove the space and quotation mark at the start
+            variables[x] = variables[x].Replace('\"', '\u2009');                    //replace any left over quotation marks with the empty character
         }
-        // name = variables[0];
-        description = variables[0];
-        id = int.Parse(variables[1]);
-        cost = int.Parse(variables[2][..variables[2].IndexOf('\"')]);       //trim off the last quotation because trim didnt work???
 
+        description = variables[0];         //first thing is description
+        id = int.Parse(variables[1]);       //then parse the id, cost, and effect (effect is always a 6 digit integer for this to work)
+        cost = int.Parse(variables[2]);
+        effectId = int.Parse(variables[3][..6]);
+
+
+        //create a new game object and instantiate it, initialize all of its fields
         GameObject temp = Instantiate(talentObjectPreFab, ROOT_NODE_LOCATION, Quaternion.identity);
-        temp.GetComponent<Talent>().Init(name, description, cost, id);
-        temp.SetActive(false);
+        temp.GetComponent<Talent>().Init(name, description, cost, id, effectId);
+        temp.SetActive(false);                                              //deactivate it and attach it to the current transform as a parent
         temp.transform.parent = transform;
 
-
-        // Debug.Log(name + "\n" + description + "\n" + id + "\n" + cost);
-
-        // Debug.Log(temp.GetComponent<Talent>().name);
+        //temporaryish code
+        //if it is a heart talent then set the icon to the heart otherwise randomize it from the placeholder images
         if (name.Contains("Heart")) {
             temp.GetComponent<Talent>().SetSprite(talentButtonSprites[HEART_SPRITE_INDEX]);
         }
         else
             temp.GetComponent<Talent>().SetSprite(talentButtonSprites[Random.Range(0, HEART_SPRITE_INDEX - 1)]);
 
+        //push it onto the tree
         if (talentTree == null) {
             talentTree = new BinaryTree(temp);
-            //temp.transform.position = new Vector2(Talent.START_X, Talent.START_Y);
         }
         else {
             talentTree.Add(temp, talentTree.Root);
-            /* Node<GameObject> node = talentTree.Find(talentTree.Root, temp);
-             //null reference
-             //this is horrible
-             //using a tree for this is the worst thing ever
-             if (temp.GetComponent<Talent>() < node.Parent.Data.GetComponent<Talent>()) 
-                 temp.transform.position = new Vector2(node.Parent.Data.transform.position.x - Talent.OFFSET_X,
-                     node.Parent.Data.transform.position.y + Talent.OFFSET_Y);
-             else
-                 temp.transform.position = new Vector2(node.Parent.Data.transform.position.x + Talent.OFFSET_X,
-                     node.Parent.Data.transform.position.y + Talent.OFFSET_Y);
-            */
-
         }
-
     }
 
 

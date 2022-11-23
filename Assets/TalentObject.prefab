@@ -522,7 +522,7 @@ GameObject:
   - component: {fileID: 4615600104120425054}
   m_Layer: 0
   m_Name: TalentObject
-  m_TagString: Untagged
+  m_TagString: TalentSelect
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -608,8 +608,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d4dffcb535f059479cb4564e3110245, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leftBracket: {fileID: 2245701540161841193, guid: ddef0310567efe74f90bc48a0ee17ad7, type: 3}
-  rightBracket: {fileID: 3852416934883569766, guid: a4d5ce9072b37a74d80bcec383bd2e96, type: 3}
+  purchasedMarkPreFab: {fileID: 8832914631609123600, guid: e32fa9d4efa03624392bca241e050532, type: 3}
 --- !u!61 &4615600104120425054
 BoxCollider2D:
   m_ObjectHideFlags: 0

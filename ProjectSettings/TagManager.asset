@@ -16,6 +16,8 @@ TagManager:
   - StoreWeaponButton
   - StoreExitButton
   - Chest
+  - TalentBackground
+  - TalentSelect
   layers:
   - Default
   - TransparentFX

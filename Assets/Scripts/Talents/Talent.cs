@@ -12,11 +12,13 @@ public class Talent : MonoBehaviour, IComparable<Talent>
     //  new string name;
     string description;                                             
     int id;
-  //  int cost;
+    int cost;
+    int effectId;
     private TextMeshProUGUI nameText, descriptionText, costText;    
     private SpriteRenderer sr;
-    
 
+    [SerializeField] GameObject purchasedMarkPreFab;
+    [SerializeField] TextMeshProUGUI playerMoney;
     
 
     private bool HasBeenPurchased { get; set; }
@@ -25,11 +27,24 @@ public class Talent : MonoBehaviour, IComparable<Talent>
         return id.CompareTo(other.id);
     }
 
+    private void OnMouseDown() {
+        if (!HasBeenPurchased) {
+            int money = int.Parse(playerMoney.text);
+            if (money >= cost)
+                Purchase(money - cost);
+        } 
+            
+    }
+
     //set the text for the button and 
-    public void Init(string name, string desc, int cost, int id) {
+    public void Init(string name, string desc, int cost, int id, int effectId) {
       //  this.name = name;
         this.id = id;
         description = desc;
+        this.cost = cost;
+        this.effectId = effectId;
+
+        playerMoney = GameObject.Find("CoinText").GetComponent<TextMeshProUGUI>();
 
         nameText = transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>();
         descriptionText = transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>();
@@ -44,8 +59,10 @@ public class Talent : MonoBehaviour, IComparable<Talent>
     public void SetSprite(Sprite sprite) {
         sr.sprite = sprite;
     }
-    public void Purchase() {
+    public void Purchase(int moneyLeft) {
         HasBeenPurchased = true;
+        Instantiate(purchasedMarkPreFab,transform.position, Quaternion.identity).transform.parent = transform;
+        playerMoney.text = moneyLeft.ToString();    
     }
     
     public static bool operator <(Talent a, Talent b) {

@@ -30,8 +30,8 @@ public abstract class EnemyBehaviour : MonoBehaviour {
         Attacking,              //actively attempting to attack the player
         Aggroed,                //the player is in range to move towards
         Dormant,                //do nothing
-        Wandering,               //move around in a random direction and change very X seconds
-        Searching
+        Wandering,              //move around in a random direction and change very X seconds
+        Searching               //uses A* pathfinding to move towards the player 
     }
     protected State state;
 
@@ -112,7 +112,7 @@ public abstract class EnemyBehaviour : MonoBehaviour {
     }
     //change direction randomly every X seconds, swap to aggroed if in range
     private void Wander() {
-        //check if the enemy has been wandering to long and begin searching for the player
+        //check if the enemy has been wandering too long and begin searching for the player
         if (wanderTimer >= WANDER_TIME) {
             state = State.Searching;
             return;
@@ -136,6 +136,10 @@ public abstract class EnemyBehaviour : MonoBehaviour {
 
 
     }
+    /// <summary>
+    /// uses A* pathfinding to move towards the player
+    /// stopps using pathfinding once in range to begin attacking the player
+    /// </summary>
     private void Search() {
         GetComponent<AIPath>().canMove = true;
         if (GetVectorToPlayer().magnitude <= attackRange) {

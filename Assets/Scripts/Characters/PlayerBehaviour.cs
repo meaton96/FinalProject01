@@ -44,12 +44,22 @@ public class PlayerBehaviour : MonoBehaviour {
     Animator animator;
     private bool godMode = false;
 
+    public static PlayerBehaviour Instance;
+
     private void Start() {
         rb = GetComponent<Rigidbody2D>();
         backpack = new();
         animator = GetComponent<Animator>();
         state = State.Normal;
 
+    }
+    private void Awake() {
+        if (Instance != null) {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
     // Update is called once per frame
@@ -88,6 +98,7 @@ public class PlayerBehaviour : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.G))
             godMode = !godMode;
         if (Input.GetKeyDown(KeyCode.L)) {
+            GameObject.FindWithTag("GameControl").GetComponent<GameController>().Pause();
             SceneManager.LoadScene(2, LoadSceneMode.Single);
         }
         /* if (Input.GetKeyDown(KeyCode.Q)) {

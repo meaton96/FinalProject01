@@ -6,7 +6,6 @@ public class GameController : MonoBehaviour {
     public GameObject HeartItemPreFab;                                          //heart object for drawing on UI
     public GameObject MagicianBallPreFab;                                       //magician projectile 
     [SerializeField] GameObject[] enemyPreFabList = new GameObject[2];          //list of all enemy prefabs in order to randomly choose which type of enemy to spawn
-    [SerializeField] GameObject[] sceneryPreFabList = new GameObject[9];        //list of all scenery prefabs to choose from
     [SerializeField] GameObject[] grassObjects = new GameObject[5];             //grass objects for drawing background
     [SerializeField] GameObject[] largeRockObjects = new GameObject[2];         //large rocks for creating the border 
     [SerializeField] Vector2 backgroundStartingLocation;                        //vector location for where to start drawing the background
@@ -16,15 +15,16 @@ public class GameController : MonoBehaviour {
     private const float LARGE_ROCK_SIZE = 1.47f;                                //the size in pixels of the large rocks
     private Vector2 borderStartLocation;                                        //vector to start drawing the border rocks
     private int numBorderRocksX, numBorderRocksY;                               //number of border rocks for each direction
-    private List<GameObject> currentEnemies;                                        //array of enemies currently spawned in the level
-    private const int NUMBER_OF_ENEMIES_TO_SPAWN = 20;
-    private const int NUMBER_OF_SCENERY_TO_SPAWN = 30;
-    [SerializeField] private GameObject[] chests = new GameObject[7];
-    [SerializeField] private float enemySpawnDistance = 1.5f;
-    private float spawnTimer = 0;
-    [SerializeField] private const float SPAWN_TIME = 10;
-    [SerializeField] private int CHEST_NUM_ITEMS_DROPPED = 5;
+    private List<GameObject> currentEnemies;                                    //array of enemies currently spawned in the level
+    [SerializeField] private GameObject[] chests = new GameObject[7];           //array holding all the chests on the current level
+    [SerializeField] private float enemySpawnDistance = 1.5f;                   //distance away from chest to spawn enemies
+    private float spawnTimer = 0;                                               //timer to track enemy spawns
+    [SerializeField] private const float SPAWN_TIME = 10;                       //seconds of time between enemy spawns
+    [SerializeField] private int CHEST_NUM_ITEMS_DROPPED = 5;                   //number of items dropped by the chests when theyre opened
 
+    public static GameController Instance;
+
+    private bool isPaused;
 
     // Start is called before the first frame update
     void Start() {
@@ -34,9 +34,18 @@ public class GameController : MonoBehaviour {
         // CreateOuterBarrier();
         // SpawnEntities(sceneryPreFabList, NUMBER_OF_SCENERY_TO_SPAWN);
         //  SpawnEnemies();
+        isPaused = false;
         currentEnemies = new();
         InitChests();
         SpawnEnemies();
+    }
+    private void Awake() {
+        if (Instance != null) {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
     // Update is called once per frame
@@ -50,21 +59,28 @@ public class GameController : MonoBehaviour {
         else {
             //spawn an enemy from each spawner every SPAWN_TIME seconds
             if (playerObject != null) {
-                if (spawnTimer >= SPAWN_TIME) {
-                    spawnTimer = 0;
-                    SpawnEnemies();
+                if (!isPaused) {
+                    if (spawnTimer >= SPAWN_TIME) {
+                        spawnTimer = 0;
+                        SpawnEnemies();
+                    }
+                    else
+                        spawnTimer += Time.deltaTime;
+
+                    playerObject.GetComponent<PlayerBehaviour>().interfaceScript.
+                        UpdateEnemiesRemaining(NumEnemiesLeft(currentEnemies));     //update the number of enemies if the player isnt dead
+                    playerObject.GetComponent<PlayerBehaviour>().interfaceScript
+                        .UpdateSpawnerText(GetNumSpawnersActive());                 //update the text for number of spawners active
+
                 }
-                else
-                    spawnTimer += Time.deltaTime;
-
-                playerObject.GetComponent<PlayerBehaviour>().interfaceScript.
-                    UpdateEnemiesRemaining(NumEnemiesLeft(currentEnemies));     //update the number of enemies if the player isnt dead
-                playerObject.GetComponent<PlayerBehaviour>().interfaceScript
-                    .UpdateSpawnerText(GetNumSpawnersActive());                 //update the text for number of spawners active
-
             }
         }
-        }
+    }
+
+    /// <summary>
+    /// checks all the chests to see if they have been opened 
+    /// </summary>
+    /// <returns>true if all chests have been opened</returns>
     private bool NoSpawnersLeft() {
         for (int x = 0; x < chests.Length; x++) {
             if (chests[x].GetComponent<ChestBehaviour>().CanSpawnEnemy())
@@ -72,12 +88,19 @@ public class GameController : MonoBehaviour {
         }
         return true;
     }
+    /// <summary>
+    /// initialize all the chests by telling them how many items to drop
+    /// </summary>
     private void InitChests() {
         for (int x = 0; x < chests.Length; x++) {
             chests[x].GetComponent<ChestBehaviour>().Init(CHEST_NUM_ITEMS_DROPPED);
         }
 
     }
+    /// <summary>
+    /// Returns the number of spawners that can currently spawn enemies to update UI text
+    /// </summary>
+    /// <returns>the number of chests that can still spawn enemies</returns>
     public int GetNumSpawnersActive() {
         int count = 0;
         for (int x = 0; x < chests.Length; x++) {
@@ -87,12 +110,10 @@ public class GameController : MonoBehaviour {
         }
         return count;
     }
+    /// <summary>
+    /// spawns a wave of enemies around each of the active spawners
+    /// </summary>
     private void SpawnEnemies() {
-        /*currentEnemies = new GameObject[NUMBER_OF_ENEMIES_TO_SPAWN];
-        List<GameObject> enemies = SpawnEntities(enemyPreFabList, NUMBER_OF_ENEMIES_TO_SPAWN);
-        for (int x = 0; x < enemies.Count; x++) {
-            currentEnemies[x] = enemies[x];
-        }*/
         for (int x = 0; x < chests.Length; x++) {
             if (chests[x].GetComponent<ChestBehaviour>().CanSpawnEnemy()) {
                 float theta = Random.Range(0, 2 * Mathf.PI);
@@ -167,8 +188,13 @@ public class GameController : MonoBehaviour {
     /// <returns>true if the area around the location vector is empty false otherwise</returns>
     private bool SpawnLocationNotEmpty(Vector2 location) {
         return Physics2D.Raycast(location, new Vector2(.1f, 0), 0.1f);
-
     }
+
+    public void Pause() {
+        isPaused = !isPaused;
+    }
+
+
     //creates a grass background by tiling the randomly chosen grass squares
     private void CreateBackground() {
         for (int x = 0; x < backgroundCol; x++) {
