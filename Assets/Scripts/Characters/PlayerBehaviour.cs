@@ -101,7 +101,7 @@ public class PlayerBehaviour : MonoBehaviour {
         }
         if (Input.GetKeyDown(KeyCode.G))
             godMode = !godMode;
-        if (Input.GetKeyDown(KeyCode.L)) {
+        if (Input.GetKeyDown(KeyCode.Escape)) {
             GameObject.FindWithTag("GameControl").GetComponent<GameController>().Pause();
            // SceneManager.LoadScene(2, LoadSceneMode.Single);
         }
