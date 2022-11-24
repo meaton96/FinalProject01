@@ -40,7 +40,7 @@ public class GameController : MonoBehaviour {
         isPaused = false;
         currentEnemies = new();
         InitChests();
-        SpawnEnemies();
+        SpawnEnemies(); 
         talentController.GetComponent<TalentTreeBehaviour>().ParseTalentJson();
     }
     private void Awake() {

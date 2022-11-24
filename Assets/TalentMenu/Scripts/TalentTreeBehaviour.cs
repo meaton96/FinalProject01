@@ -52,7 +52,7 @@ public class TalentTreeBehaviour : MonoBehaviour {
         Vector3 curScreenPoint = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPoint.z);
 
         Vector3 curPosition = Camera.main.ScreenToWorldPoint(curScreenPoint) + offset;
-      //  transform.position = new Vector2(curPosition.x, curPosition.y);
+        transform.position = new Vector2(curPosition.x, curPosition.y);
 
     }
     /// <summary>

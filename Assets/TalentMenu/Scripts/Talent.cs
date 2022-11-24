@@ -30,7 +30,7 @@ public class Talent : MonoBehaviour, IComparable<Talent> {
         if (!HasBeenPurchased) {
             int money = int.Parse(playerMoney.text);
             if (money >= cost)
-                Purchase(money - cost);
+                Purchase(money);
         }
 
     }
@@ -56,17 +56,17 @@ public class Talent : MonoBehaviour, IComparable<Talent> {
         costText.SetText(cost + "");
 
         if (hasBeenPurchased) {
-            Purchase(int.Parse(playerMoney.text));
+         //   Purchase(int.Parse(playerMoney.text));
 
         }
     }
     public void SetSprite(Sprite sprite) {
         sr.sprite = sprite;
     }
-    public void Purchase(int moneyLeft) {
+    public void Purchase(int playerCurrentMoney) {
         HasBeenPurchased = true;
         Instantiate(purchasedMarkPreFab, transform.position, Quaternion.identity).transform.parent = transform;
-        playerMoney.text = moneyLeft.ToString();
+        playerMoney.text = playerCurrentMoney - cost + "";
         PlayerBehaviour playerBehaviour = GameObject.FindWithTag("Player").GetComponent<PlayerBehaviour>();
         playerBehaviour.RemoveCoins(cost);
         playerBehaviour.ApplyTalent(effectId, id);

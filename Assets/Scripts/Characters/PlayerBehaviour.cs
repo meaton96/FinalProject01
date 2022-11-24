@@ -53,6 +53,7 @@ public class PlayerBehaviour : MonoBehaviour {
         backpack = new();
         animator = GetComponent<Animator>();
         state = State.Normal;
+        //numCoins = 5;
 
     }
     //preserve the player when swapping to a new scene
@@ -224,7 +225,7 @@ public class PlayerBehaviour : MonoBehaviour {
         if (health_current <= 0)
             PlayerDeath();
         else {
-            interfaceScript.AdjustHeartMultipleTimes(interfaceScript.RemoveHalfHeart, damageDone);
+            //interfaceScript.AdjustHeartMultipleTimes(interfaceScript.RemoveHalfHeart, damageDone);
         }
     }
 
@@ -242,7 +243,7 @@ public class PlayerBehaviour : MonoBehaviour {
                 //healing player is 1/2 a heart behind actual player health
                 //???????
                // Debug.Log($"health: +{health_current}");
-                interfaceScript.AddHalfHeart();
+               // interfaceScript.AddHalfHeart();
 
             }
             else if (collision.gameObject.GetComponent<CoinBehaviour>() != null) {
@@ -262,7 +263,8 @@ public class PlayerBehaviour : MonoBehaviour {
             case 000001:
                 health_max += 2;
                 health_current = health_max;
-                interfaceScript.AdjustMaximumHearts();
+                Debug.Log("Health: " + health_current);
+               // interfaceScript.AdjustMaximumHearts();
                 purchasedTalents.Add(talentId);
                 break;
         }
