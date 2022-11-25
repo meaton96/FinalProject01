@@ -105,14 +105,8 @@ public class PlayerBehaviour : MonoBehaviour {
             GameObject.FindWithTag("GameControl").GetComponent<GameController>().Pause();
            // SceneManager.LoadScene(2, LoadSceneMode.Single);
         }
-        /* if (Input.GetKeyDown(KeyCode.Q)) {
-             interfaceScript.RemoveHalfHeart();
 
-         }
-         if (Input.GetKeyDown(KeyCode.E)) {
-             interfaceScript.AddHalfHeart();
-         }*/
-
+        //set movement vector to the speed * the direction
         Vector2 movement = speed * Time.deltaTime * new Vector2(moveX, moveY);
 
         //flip the sprite when changing directions
@@ -132,6 +126,7 @@ public class PlayerBehaviour : MonoBehaviour {
     }
 
     public int NumCoins() {  return numCoins; } 
+
     //start the player roll
     //set the state and set rollDir vector 
     private void StartRoll() {
@@ -156,20 +151,15 @@ public class PlayerBehaviour : MonoBehaviour {
 
 
     }
+    //removes the coins from the player coins
     public void RemoveCoins(int numCoinsSpent) {
         numCoins -= numCoinsSpent;
     }
+    //equips the passeed in weapon to the player (unused)
     public void EquipWeapon(GameObject weapon) {
         numCoins -= weapon.GetComponent<Weapon>().cost;
     }
-    private void IgnoreDefaultLayerCollisions() {
-        Debug.Log("Ignoring layer collisions");
-        Physics2D.IgnoreLayerCollision(0, 6);
-    }
-    private void StopIgnoringDefaultLayerCollisions() {
-        Debug.Log("Stop ignoring");
-        Physics2D.IgnoreLayerCollision(0, 6, false);
-    }
+    //check if the player can roll or not (unused)
     private bool CanRoll(Vector2 rollDirection) {
         if (!facingRight)
             rollDirection = rollDirection * -1;
@@ -204,7 +194,7 @@ public class PlayerBehaviour : MonoBehaviour {
 
     }
     
-
+    //flips the sprite 180 degrees to face the other way
     void FlipSprite() {
         transform.Rotate(0, 180, 0);
         facingRight = !facingRight;
@@ -238,12 +228,6 @@ public class PlayerBehaviour : MonoBehaviour {
                 //make sure that the health can't go above maximum
                 if (health_current > health_max)
                     health_current = health_max;
-                //some weird bug here
-                //sometimes health gets off by 1/2 of a heart, player health is calculated correctly but
-                //healing player is 1/2 a heart behind actual player health
-                //???????
-               // Debug.Log($"health: +{health_current}");
-               // interfaceScript.AddHalfHeart();
 
             }
             else if (collision.gameObject.GetComponent<CoinBehaviour>() != null) {

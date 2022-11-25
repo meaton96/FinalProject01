@@ -7,17 +7,15 @@ using UnityEngine;
 public class Talent : MonoBehaviour, IComparable<Talent> {
 
 
-
-    //  new string name;
     string description;
     int id;
     int cost;
     int effectId;
-    private TextMeshProUGUI nameText, descriptionText, costText;
-    private SpriteRenderer sr;
+    private TextMeshProUGUI nameText, descriptionText, costText;            //reference to text children to write information
+    private SpriteRenderer sr;                                              //sprite renderer object to change the sprite
 
-    [SerializeField] GameObject purchasedMarkPreFab;
-    TextMeshProUGUI playerMoney;
+    [SerializeField] GameObject purchasedMarkPreFab;                        //prefab to write a check mark over the object for purchased talents
+    TextMeshProUGUI playerMoney;                                            //text reference to update player money
 
 
     private bool HasBeenPurchased { get; set; }
@@ -26,6 +24,7 @@ public class Talent : MonoBehaviour, IComparable<Talent> {
         return id.CompareTo(other.id);
     }
 
+    //called when the object is clicked on, try to purchase the talent if it hasnt been purchased already
     private void OnMouseDown() {
         if (!HasBeenPurchased) {
             int money = int.Parse(playerMoney.text);
@@ -35,7 +34,7 @@ public class Talent : MonoBehaviour, IComparable<Talent> {
 
     }
 
-    //set the text for the button and 
+    //set all variables including name,description,and cost text and init the sprite renderer
     public void Init(string name, string desc, int cost, int id, int effectId, bool hasBeenPurchased) {
         
         //  this.name = name;
@@ -54,15 +53,15 @@ public class Talent : MonoBehaviour, IComparable<Talent> {
         nameText.SetText(name);
         descriptionText.SetText(description);
         costText.SetText(cost + "");
-
-        if (hasBeenPurchased) {
-         //   Purchase(int.Parse(playerMoney.text));
-
-        }
     }
+    //set the displayed sprite to the passed in sprite
     public void SetSprite(Sprite sprite) {
         sr.sprite = sprite;
     }
+
+    //purchase the talent, creates the check mark to show on the ui the talent has been purchased
+    //removes money from the playermoney text on the store object (not working)
+    //emoves money from the player and passes over the effectID and ID to apply the talent upgrade to the player
     public void Purchase(int playerCurrentMoney) {
         HasBeenPurchased = true;
         Instantiate(purchasedMarkPreFab, transform.position, Quaternion.identity).transform.parent = transform;
