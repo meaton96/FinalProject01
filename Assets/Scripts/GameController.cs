@@ -22,27 +22,19 @@ public class GameController : MonoBehaviour {
     private float spawnTimer = 0;                                               //timer to track enemy spawns
     [SerializeField] private const float SPAWN_TIME = 10;                       //seconds of time between enemy spawns
     [SerializeField] private int CHEST_NUM_ITEMS_DROPPED = 5;                   //number of items dropped by the chests when theyre opened
-    [SerializeField] private GameObject talentController, talentBackground;
+    [SerializeField] private GameObject talentController, talentBackground;     //pointers to control talent menu
+    public static GameController Instance;                                      //this
+    private bool isPaused;                                                      //if the game is paused or not
 
-
-    public static GameController Instance;
-
-    private bool isPaused;
-
-    // Start is called before the first frame update
+    //ignore collisions, set the game to not paused, init enemy list, init chests and spawn the first of enemies
     void Start() {
         Physics2D.IgnoreLayerCollision(6, 7);       //ignore all collisions between enemies and dropped items
-        // CreateBackground();
-        //SpawnEnemyWave(5);
-        // CreateOuterBarrier();
-        // SpawnEntities(sceneryPreFabList, NUMBER_OF_SCENERY_TO_SPAWN);
-        //  SpawnEnemies();
         isPaused = false;
         currentEnemies = new();
         InitChests();
         SpawnEnemies(); 
-        talentController.GetComponent<TalentTreeBehaviour>().ParseTalentJson();
     }
+    //set the game object to not be destroyed on switching scenes
     private void Awake() {
         if (Instance != null) {
             Destroy(gameObject);
@@ -56,9 +48,8 @@ public class GameController : MonoBehaviour {
     void Update() {
         if (currentEnemies == null || (AllAreNull(currentEnemies) && NoSpawnersLeft())) {
             Debug.Log("Round over");
-            //SceneManager.LoadScene(2);
-            //Debug.Log("Load new scene");
-            //SpawnEnemies();
+            //end level, load new enemies, new level or something
+            //currently game just does nothing after all chests are opened
         }
         else {
             //spawn an enemy from each spawner every SPAWN_TIME seconds
@@ -120,12 +111,12 @@ public class GameController : MonoBehaviour {
     private void SpawnEnemies() {
         for (int x = 0; x < chests.Length; x++) {
             if (chests[x].GetComponent<ChestBehaviour>().CanSpawnEnemy()) {
-                float theta = Random.Range(0, 2 * Mathf.PI);
-                int index = Random.Range(0, enemyPreFabList.Length);
+                float theta = Random.Range(0, 2 * Mathf.PI);                    //random angle around the spawner
+                int index = Random.Range(0, enemyPreFabList.Length);            //random enemy chosen from the enemy prefab list
                 Vector2 spawnLocation = new(
                     Mathf.Cos(theta) * enemySpawnDistance + chests[x].transform.position.x,
-                    Mathf.Sin(theta) * enemySpawnDistance + chests[x].transform.position.y);
-                currentEnemies.Add(Instantiate(enemyPreFabList[index], spawnLocation, Quaternion.identity));
+                    Mathf.Sin(theta) * enemySpawnDistance + chests[x].transform.position.y);        //spawn randomly around the chest
+                currentEnemies.Add(Instantiate(enemyPreFabList[index], spawnLocation, Quaternion.identity)); //create and add to the enemy list
             }
         }
 
@@ -151,7 +142,7 @@ public class GameController : MonoBehaviour {
     public List<GameObject> GetEnemies() { return currentEnemies; }
 
     /// <summary>
-    /// Spawns a number of entities on the level
+    /// Spawns a number of entities on the level, currently unused 
     /// </summary>
     /// <param name="entityPrefabArray">the list of prefabs to chose from to spawn an entity</param>
     /// <param name="numberToSpawn">the number of entities to spawn</param>
@@ -159,11 +150,7 @@ public class GameController : MonoBehaviour {
     private List<GameObject> SpawnEntities(GameObject[] entityPrefabArray, int numberToSpawn) {
 
         float leftConstraint, topConstraint, rightConstraint, bottomConstraint;  //constraints for where to spawn the entities 
-        /* leftConstraint = borderStartLocation.x + LARGE_ROCK_SIZE * 2 / 3;
-         topConstraint = borderStartLocation.y - LARGE_ROCK_SIZE * 2 / 3;
-         rightConstraint = leftConstraint + LARGE_ROCK_SIZE * numBorderRocksX - LARGE_ROCK_SIZE * 2.5f;
-         bottomConstraint = topConstraint - LARGE_ROCK_SIZE * numBorderRocksY + LARGE_ROCK_SIZE * 2.5f;
-        */
+        
         leftConstraint = -11.5f;
         rightConstraint = 11.5f;
         topConstraint = 6.5f;
@@ -198,17 +185,17 @@ public class GameController : MonoBehaviour {
     /// </summary>
     public void Pause() {
         if (Time.timeScale == 1) {
-            Time.timeScale = 0;
+            Time.timeScale = 0;                         //pauses time and activates talent menu
             talentBackground.SetActive(true);
             talentController.SetActive(true);
             isPaused = true;
-            Camera.main.orthographicSize = 5;
+            Camera.main.orthographicSize = 5;           //zoom camera out because the sizes were messed up
             talentController.GetComponent<TalentTreeBehaviour>().
-                SetCoinText(playerObject.GetComponent<PlayerBehaviour>().NumCoins());
+                SetCoinText(playerObject.GetComponent<PlayerBehaviour>().NumCoins());       //set coin text on talent background
         }
         else {
             isPaused = false;
-            Time.timeScale = 1;
+            Time.timeScale = 1;                         //unpause, deactivate talent menu, zoom camera back in
             talentBackground.SetActive(false);
             talentController.SetActive(false);
             Camera.main.orthographicSize = 2;
@@ -217,18 +204,18 @@ public class GameController : MonoBehaviour {
     }
 
 
-    //creates a grass background by tiling the randomly chosen grass squares
+    //creates a grass background by tiling the randomly chosen grass squares, unused
     private void CreateBackground() {
         for (int x = 0; x < backgroundCol; x++) {
             for (int y = 0; y < backgroundRow; y++) {
-                Instantiate(grassObjects[Random.Range(0, grassObjects.Length)],
+                Instantiate(grassObjects[Random.Range(0, grassObjects.Length)],     
                     new Vector2(backgroundStartingLocation.x + (x * GRASS_SIZE),
                     backgroundStartingLocation.y - (y * GRASS_SIZE)),
                     Quaternion.identity);
             }
         }
     }
-    //creates a square border of large rocks so the player cannot leave the game world
+    //creates a square border of large rocks so the player cannot leave the game world, unused
     private void CreateOuterBarrier() {
         //2.9 and 1.6 + the width of the rock prevents the camera from viewing the edge of the grass squares 
         borderStartLocation = new Vector2(backgroundStartingLocation.x + 2.9f, backgroundStartingLocation.y - 1.6f);

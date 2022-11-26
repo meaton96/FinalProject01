@@ -10,25 +10,25 @@ public abstract class EnemyBehaviour : MonoBehaviour {
     private Rigidbody2D rb;
     private Animator animator;
     private GameObject player;
-    private Stack<Item> drops;                      //stack for item drops when enemy dies
-    private int numItemsDropped;                    //number of items the enemy drops on death
-    private float itemSpawnRange;                   //distance for spawning items in a circle around the enemy location
-    private float wanderDirectionChangeCounter;     //counter to time duration of wander direction
-    private const int DAMAGE_ON_COLLISION = 1;      //amount of damage inflected on the player when running into them baseline
-                                                    //1 = 1/2 a heart
-    [SerializeField] private float wanderSpeedMultiplier;       //how slower/faster the enemy moves while wandering vs aggroed
-    [SerializeField] private float wanderDirectionChangeTime;   //the time set during the wandering movement before changing directions
-                                                                //in seconds
-    protected float movementSpeed;             //the base movement speed of the enemy
-    protected float attackRange;               //the range the enemy must get to before attacking the player
-    protected float aggroRange;                //the range the enmy must get to before starting to move toward the player
-    [SerializeField] protected float Health;
+    private Stack<Item> drops;                                  //stack for item drops when enemy dies
+    private int numItemsDropped;                                //number of items the enemy drops on death
+    private float wanderDirectionChangeCounter;                 //counter to time duration of wander direction
+    private const int DAMAGE_ON_COLLISION = 1;                  //amount of damage inflected on the player when running into them baseline
+    protected float movementSpeed;                              //the base movement speed of the enemy
+    protected float attackRange;                                //the range the enemy must get to before attacking the player
+    protected float aggroRange;                                 //the range the enmy must get to before starting to move toward the player
+    [SerializeField] protected float Health;                    
 
-    private const float WANDER_TIME = 10f;
-    private float wanderTimer = 0;
+    private const float WANDER_SPEED_MULTI = .5f;               //wandering speed is 1/2 the normal walking speed
+    private const float ITEM_SPAWN_RANGE = .2f;                 //distance for spawning items away from dying enemy
+    private const int MAX_NUM_ITEMS_DROPPED = 6;                //max range for amount of items dropped
+    private const int MAX_ENEMY_HEALTH = 4;                     //maximum value for player health to be randomized to exclusive
+
+    private const float WANDER_TIME = 10f;                      //duration the enemy will wander for before swapping to searching
+    private float wanderTimer = 0;                              
     public enum State {         //state for storing the current enemy actions
         Attacking,              //actively attempting to attack the player
-        Aggroed,                //the player is in range to move towards
+        Aggroed,                //unused, replaced by A*
         Dormant,                //do nothing
         Wandering,              //move around in a random direction and change very X seconds
         Searching               //uses A* pathfinding to move towards the player 
@@ -44,10 +44,8 @@ public abstract class EnemyBehaviour : MonoBehaviour {
     public void Init() {
         Player = GameObject.FindWithTag("Player");
         GetComponent<AIDestinationSetter>().target = Player.transform;
-        wanderSpeedMultiplier = .5f;                    //default wandering speed is 1/2 regular movement speed
-        wanderDirectionChangeTime = 10f;                //set change direction time to 10 seconds
-        numItemsDropped = Random.Range(1, 5);           //random number of drops 1-5 to be replaced by different number per enemy 
-        itemSpawnRange = .2f;                           //radius of item spawn circle
+        Health = Random.Range(1, MAX_ENEMY_HEALTH);
+        numItemsDropped = Random.Range(1, MAX_NUM_ITEMS_DROPPED); //random number of drops 1-5 to be replaced by different number per enemy 
         wanderDirectionChangeCounter = 0;
         Rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
@@ -123,9 +121,9 @@ public abstract class EnemyBehaviour : MonoBehaviour {
         //change the wander direction every few seconds to a random direction
         if (wanderDirectionChangeCounter <= 1) {
             float angle = Random.Range(0, 2 * Mathf.PI);
-            SetVelocity(movementSpeed * wanderSpeedMultiplier,
+            SetVelocity(movementSpeed * WANDER_SPEED_MULTI,
                 new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)));
-            wanderDirectionChangeCounter = wanderDirectionChangeTime;
+            wanderDirectionChangeCounter = WANDER_TIME;
         }
         else
             wanderDirectionChangeCounter -= Time.deltaTime;
@@ -185,8 +183,8 @@ public abstract class EnemyBehaviour : MonoBehaviour {
     private void Die() {
         while (drops.TryPop(out Item i)) {
             float theta = Random.Range(0, 2 * Mathf.PI);
-            Vector2 dropDir = new(transform.position.x + itemSpawnRange * Mathf.Cos(theta),
-                transform.position.y + itemSpawnRange * Mathf.Sin(theta));
+            Vector2 dropDir = new(transform.position.x + ITEM_SPAWN_RANGE * Mathf.Cos(theta),
+                transform.position.y + ITEM_SPAWN_RANGE * Mathf.Sin(theta));
             i.Drop(transform.position, dropDir);
         }
         Destroy(gameObject);

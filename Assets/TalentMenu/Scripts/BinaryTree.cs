@@ -91,7 +91,7 @@ internal class BinaryTree {
                 pos.x + bracketOffsetX,
                 pos.y + bracketOffsetY),
                 Quaternion.identity);
-            temp.transform.parent = parent.transform;
+            temp.transform.parent = parent.transform;                   
             root.Right.Data.transform.position = new Vector2(pos.x + offsetX, pos.y + offsetY);
             SetNodeTransforms(root.Right, offsetX, offsetY, bracketOffsetX, bracketOffsetY, leftBracketPreFab, rightBracketPreFab, parent);
         }

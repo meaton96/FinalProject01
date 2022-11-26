@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class IgnoreCollisions : StateMachineBehaviour
 {
+    //class used to create invincability frames when player rolls
+    //turns on and off the player ignoring collisions with the enemy layer
+
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {

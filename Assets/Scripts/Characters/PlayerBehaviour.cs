@@ -26,6 +26,8 @@ public class PlayerBehaviour : MonoBehaviour {
     private const string ANIM_SPEED_TAG = "Speed";
     private const string BORDER_ROCK_TAG = "BorderRocks";
 
+    public const int HEALTH_CEILING = 30;
+
     //enum representing if the player is rolling or not
     private enum State { Normal, Roll }
     private State state;
@@ -46,8 +48,9 @@ public class PlayerBehaviour : MonoBehaviour {
     private bool godMode = false;                   //cheat mode, invlunerable to damage
     public List<int> purchasedTalents = new();      //contains a list of all purchased talents by keeping track of their Ids
 
-    public static PlayerBehaviour Instance;
+    public static PlayerBehaviour Instance;         //this
 
+    //set rigid body and animator, init backpack and set state to not rolling
     private void Start() {
         rb = GetComponent<Rigidbody2D>();
         backpack = new();
@@ -101,9 +104,8 @@ public class PlayerBehaviour : MonoBehaviour {
         }
         if (Input.GetKeyDown(KeyCode.G))
             godMode = !godMode;
-        if (Input.GetKeyDown(KeyCode.Escape)) {
+        if (Input.GetKeyDown(KeyCode.Escape)) {                                             //pause the game
             GameObject.FindWithTag("GameControl").GetComponent<GameController>().Pause();
-           // SceneManager.LoadScene(2, LoadSceneMode.Single);
         }
 
         //set movement vector to the speed * the direction
@@ -184,9 +186,6 @@ public class PlayerBehaviour : MonoBehaviour {
         if (Input.GetMouseButtonDown(0)) {
             animator.SetTrigger(ANIM_ATTACK_TAG);
         }
-        //else if (Input.GetMouseButtonDown(1)) {
-        //animator.SetTrigger(ANIM_SHOOT_TAG);
-        //}
         else if (Input.GetKeyDown(KeyCode.Space)) {
             animator.SetTrigger(ANIM_ROLL_TAG);
             StartRoll();
@@ -205,20 +204,18 @@ public class PlayerBehaviour : MonoBehaviour {
         Destroy(gameObject);
         SceneManager.LoadScene(END_GAME_SCENE, LoadSceneMode.Single);
     }
-    //damage the player health by either one half or one full heart
+    //damage the player health by an integer amount
     public void DamagePlayerHealth(int damageDone) {
-        if (godMode) {
+        if (godMode) {  //player immunity
             return;
         }
-        health_current -= damageDone;
+        health_current -= damageDone;       
         
         if (health_current <= 0)
             PlayerDeath();
-        else {
-            //interfaceScript.AdjustHeartMultipleTimes(interfaceScript.RemoveHalfHeart, damageDone);
-        }
     }
 
+    //handle the player colliding into things
     private void OnCollisionEnter2D(Collision2D collision) {
         if (collision.gameObject.CompareTag("Item")) {                            //player collided with an item
             if (collision.gameObject.GetComponent<HeartBehaviour>() != null) {
@@ -242,14 +239,15 @@ public class PlayerBehaviour : MonoBehaviour {
         }
     }
 
+    //apply a talent by effectID, store talent ID in the list so it cant be purchased again
     public void ApplyTalent(int effectId, int talentId) {
         switch(effectId) {
-            case 000001:
+            case 000001:                                    //effect 1: +1 to maxmimum hearts
                 health_max += 2;
                 health_current = health_max;
-                Debug.Log("Health: " + health_current);
-               // interfaceScript.AdjustMaximumHearts();
                 purchasedTalents.Add(talentId);
+                break;
+            case 000002:
                 break;
         }
     }

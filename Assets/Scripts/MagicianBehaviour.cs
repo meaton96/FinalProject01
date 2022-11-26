@@ -7,11 +7,11 @@ using UnityEngine;
 
 public class MagicianBehaviour : EnemyBehaviour
 {
-    [SerializeField] float projectileSpeed;
-    private Animator magicianAnimator;
-    private const float AttackDelayTime = 1f;
-    [SerializeField] private float AttackDelayCounter = 0;
-    private int projectileDamage;
+    [SerializeField] float projectileSpeed;                         //how fast the enemy's projectile travels
+    private Animator magicianAnimator;                              //pointer to animation controller
+    private const float AttackDelayTime = 1f;                       //1 second delay between attacks
+    [SerializeField] private float AttackDelayCounter = 0;          //timer to track attack delay
+    private int projectileDamage;                                   //how much damage the magician does with its attacks
 
     private const string DEATH_TRIGGER = "Death";
     private const string ATTACK_TRIGGER = "attack";
@@ -21,13 +21,15 @@ public class MagicianBehaviour : EnemyBehaviour
 
 
     protected override void Start() {
-        movementSpeed = .6f;
-        attackRange = 1.5f;
-        aggroRange = 2f;
-        projectileDamage = 2;
-        magicianAnimator = GetComponent<Animator>();
+        movementSpeed = .6f;                                        //base movement speed is slowed a bit
+        attackRange = 1.5f;                                         //how far the magician gets from the player before attacking
+        aggroRange = 2f;                                            //unused
+        projectileDamage = 2;                                       //damage is 1 full heart
+        magicianAnimator = GetComponent<Animator>();                //get the animator object
         base.Start();
     }
+    //attacks the player every 1AttackDelayTime seconds, plays the throwing animation which
+    //calls the Shoot method part way through
     public override void AttackPlayer() {
         if (GetVectorToPlayer().magnitude > attackRange)
             state = State.Aggroed;
@@ -40,18 +42,17 @@ public class MagicianBehaviour : EnemyBehaviour
         }
         
     }
+    //fire projectile at the player
     public void Shoot() {
+        //Instantiate the ball
         GameObject ball = Instantiate(GameObject.FindWithTag("GameControl")
             .GetComponent<GameController>().MagicianBallPreFab, transform.position, Quaternion.identity);
-        Physics2D.IgnoreCollision(GetComponent<Collider2D>(), ball.GetComponent<Collider2D>());
-        Projectile projScript = ball.GetComponent<Projectile>();
-        //projScript.SetCollisionIgnores();
-        //Debug.Log(projScript.gameObject.transform.position);    
-        //Vector3 playerPos = GameObject.FindWithTag("Player").transform.position;
+        Physics2D.IgnoreCollision(GetComponent<Collider2D>(), ball.GetComponent<Collider2D>());     //ignore collisions with the enemy
+        Projectile projScript = ball.GetComponent<Projectile>();                                    
         projScript.SetDirection(GetVectorToPlayer().normalized);
-        projScript.SetSpeed(projectileSpeed);
+        projScript.SetSpeed(projectileSpeed);                //shoot towards the player and set speed
         
-        projScript.Damage = projectileDamage;
+        projScript.Damage = projectileDamage;               //set damage
     }
 
 }

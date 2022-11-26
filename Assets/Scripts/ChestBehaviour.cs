@@ -19,14 +19,17 @@ public class ChestBehaviour : MonoBehaviour {
         else
             Close();
     }
+    //loads the closed image and set state
     private void Close() {
         state = State.closed;
         GetComponent<SpriteRenderer>().sprite = closeSprite;
     }
+    //create chest by calling method to create chest drops
     public void Init(int numItems) {
         state = State.closed;
         drops = MakeDrops(numItems);
     }
+    
     public bool CanSpawnEnemy() {
         return !hasBeenOpened;
     }
@@ -45,14 +48,14 @@ public class ChestBehaviour : MonoBehaviour {
         return drops;
     }
     public void Open() {
-        hasBeenOpened = true;
+        hasBeenOpened = true;                                               //set flag
         state = State.open;
-        GetComponent<SpriteRenderer>().sprite = openSprite;
-        while (drops.TryDequeue(out Item i)) {
-            float theta = Random.Range(0, 2 * Mathf.PI);
-            Vector2 dropDir = new(transform.position.x + 2 * Mathf.Cos(theta),
+        GetComponent<SpriteRenderer>().sprite = openSprite;                 //set to open image
+        while (drops.TryDequeue(out Item i)) {                              //take all of the items out of the chest and drop them
+            float theta = Random.Range(0, 2 * Mathf.PI);                    //random circle around chest
+            Vector2 dropDir = new(transform.position.x + 2 * Mathf.Cos(theta),  
                 transform.position.y + 2 * Mathf.Sin(theta));
-            i.Drop(transform.position, dropDir);
+            i.Drop(transform.position, dropDir);                            
         }
     }
 }

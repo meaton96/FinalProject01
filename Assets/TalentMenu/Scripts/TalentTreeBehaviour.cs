@@ -7,47 +7,47 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class TalentTreeBehaviour : MonoBehaviour {
-    [SerializeField] private Sprite[] talentButtonSprites = new Sprite[16];
-    private const int HEART_SPRITE_INDEX = 15;
-    [SerializeField] private GameObject talentObjectPreFab;
-    private const string TALENT_FILE_PATH = "Assets\\TalentMenu\\talents.json";
-    public static Vector2 ROOT_NODE_LOCATION = new(0f, -4f);
-    [SerializeField] private TextMeshProUGUI coinText;
+    [SerializeField] private Sprite[] talentButtonSprites = new Sprite[16];             //images to display for talents currently just random placeholder image
+    private const int HEART_SPRITE_INDEX = 15;                                          //where the heart icon is located
+    [SerializeField] private GameObject talentObjectPreFab;                             //talent object to create talents with
+    private const string TALENT_FILE_PATH = "Assets\\TalentMenu\\talents.json";         //location of the talents.json file to hold talent info
+    public static Vector2 ROOT_NODE_LOCATION = new(0f, -4f);                            //where the 1st talent will be displayed
+    [SerializeField] private TextMeshProUGUI coinText;                                  //text to display the cost of the talent
 
-    [SerializeField] private GameObject leftBracket, rightBracket;
+    [SerializeField] private GameObject leftBracket, rightBracket;                      //prefabs to create the brackets displaying links 
+                                                                                        //between talents
+    private Vector3 screenPoint;                                                        //
+    private Vector3 offset;                                                             //used to be able to click and drag to move talent tree
 
-    private Vector3 screenPoint;
-    private Vector3 offset;
-
-    public const float BRACKET_OFFSET_Y = 1.2f;
+    //constants to correctly place brackets offset from their parent talent
+    public const float BRACKET_OFFSET_Y = 1.2f;                                         
     public const float BRACKET_OFFSET_X = 1.6f;
 
     public const float OFFSET_Y = 2.4f;
     public const float OFFSET_X = 3;
 
-    public const float START_X = 0;
-    public const float START_Y = -4;
+    //public const float START_X = 0;
+    //public const float START_Y = -4;
 
     BinaryTree talentTree;
     // Start is called before the first frame update
     void Start() {
 
-        //ParseTalentJson();
-        talentTree.ActivateAllNodes(talentTree.Root);
-        talentTree.SetNodeTransforms(talentTree.Root, OFFSET_X, OFFSET_Y, BRACKET_OFFSET_X,
+        talentTree.ActivateAllNodes(talentTree.Root);                                                           
+        talentTree.SetNodeTransforms(talentTree.Root, OFFSET_X, OFFSET_Y, BRACKET_OFFSET_X,                     
             BRACKET_OFFSET_Y, leftBracket, rightBracket, gameObject);
-
-        coinText.text = GameObject.FindWithTag("Player").GetComponent<PlayerBehaviour>().NumCoins() + "";
-        //Debug.Log(talentTree.Root.Data.ToString());
+        ParseAllTalents();                                                                                      
+        coinText.text = GameObject.FindWithTag("Player").GetComponent<PlayerBehaviour>().NumCoins() + "";       
     }
 
+    //records click location and offset of the mouse to the center of the screen
     void OnMouseDown() {
         screenPoint = Camera.main.WorldToScreenPoint(gameObject.transform.position);
         offset = gameObject.transform.position - Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPoint.z));
 
     }
 
-
+    //allows user to drag the talent tree around
     void OnMouseDrag() {
         Vector3 curScreenPoint = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPoint.z);
 
@@ -58,18 +58,18 @@ public class TalentTreeBehaviour : MonoBehaviour {
     /// <summary>
     /// Parses the talents.json file and uses the ParseJsonTalent to create talents 
     /// </summary>
-    public void ParseTalentJson() {
+    public void ParseAllTalents() {
         string json = "";
         using (StreamReader sr = File.OpenText(TALENT_FILE_PATH)) {
             while (!sr.EndOfStream) {
-                json += sr.ReadLine();
+                json += sr.ReadLine();                      //read the entire file
             }
 
-            json = json[1..];
-            json.Trim('}');
-            string[] talents = json.Split("}");
+            json = json[1..];                               //remove the first character in the json string
+            json.Trim('}');                                 //remove the final } before splitting the file
+            string[] talents = json.Split("}");             //split into individual talent json text
             for (int x = 0; x < talents.Length; x++) {
-                ParseJsonTalent(talents[x]);
+                ParseJsonTalent(talents[x]);                //parse each talent one at a time
             }
         }
     }
@@ -83,6 +83,7 @@ public class TalentTreeBehaviour : MonoBehaviour {
 
     /// <summary>
     /// Takes a section of json data and creates a Talent instance out of it and pushes it into the tree
+    /// This is super messy and should be re written most likely but it works 
     /// </summary>
     /// <param name="json">The section of Json data representing a single talent</param>
     void ParseJsonTalent(string json) {

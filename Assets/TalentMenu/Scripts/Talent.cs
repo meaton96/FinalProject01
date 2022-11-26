@@ -7,10 +7,10 @@ using UnityEngine;
 public class Talent : MonoBehaviour, IComparable<Talent> {
 
 
-    string description;
-    int id;
-    int cost;
-    int effectId;
+    string description;                                                     //what the talent does
+    int id;                                                                 //unique ID number for the talent
+    int cost;                                                               //how many coins to purchase
+    int effectId;                                                           //the int effect ID to tell the player
     private TextMeshProUGUI nameText, descriptionText, costText;            //reference to text children to write information
     private SpriteRenderer sr;                                              //sprite renderer object to change the sprite
 
@@ -36,8 +36,6 @@ public class Talent : MonoBehaviour, IComparable<Talent> {
 
     //set all variables including name,description,and cost text and init the sprite renderer
     public void Init(string name, string desc, int cost, int id, int effectId, bool hasBeenPurchased) {
-        
-        //  this.name = name;
         this.id = id;
         description = desc;
         this.cost = cost;
