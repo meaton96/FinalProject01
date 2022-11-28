@@ -32,11 +32,11 @@ public class TalentTreeBehaviour : MonoBehaviour {
     BinaryTree talentTree;
     // Start is called before the first frame update
     void Start() {
-
+        ParseAllTalents();
         talentTree.ActivateAllNodes(talentTree.Root);                                                           
         talentTree.SetNodeTransforms(talentTree.Root, OFFSET_X, OFFSET_Y, BRACKET_OFFSET_X,                     
             BRACKET_OFFSET_Y, leftBracket, rightBracket, gameObject);
-        ParseAllTalents();                                                                                      
+                                                                                             
         coinText.text = GameObject.FindWithTag("Player").GetComponent<PlayerBehaviour>().NumCoins() + "";       
     }
 
